@@ -4,6 +4,7 @@
 // ================
 
 
+
 /* Retrieves data from db and put it into an array */
 function data($args, $filters = array(), $single = ''){
 	$tablename = $GLOBALS['tableprefix'] . '_' . $args['table'];
