@@ -1,9 +1,18 @@
 <?php include('devpress/header.php'); ?>
 
-<ul>
-	<li><a href="mitarbeiter.php">Mitarbeiter</a></li>
-	<li><a href="partner.php">Partner</a></li>
-</ul>
+<?php include('nav.php'); ?>
+<section class="dp-title">
+  <hgroup>
+	<h2>Home</h2>
+  </hgroup>
+</section>
 
+<section class='db-edit'>
+	<div class='db-edit-col db-edit-col-2'>
+		<h4 class="db-edit-title">Wilkommen</h4>
+		<p>wählen Sie eine Tabelle open aus.</p>
+	</div>
+	<div class="clear">&nbsp;</div>
+</section>
 
 <?php include('devpress/footer.php'); ?>
