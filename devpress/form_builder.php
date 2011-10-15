@@ -161,7 +161,7 @@ function mr_checkboxes($data = array(), $table = '', $col = '', $name = '', $bef
 				$return .= '<select name="'.$table.'[]" class="multipleselect" multiple="multiple">';
 				foreach ($tabledata as $key => $value) {
 					$beforecol2 = $value[$beforecol] . ' ';
-					$aftercol2 =  ' ' . $value[$aftercol];
+					$aftercol2 =  (array_key_exists($aftercol, $value) ? ' ' . $value[$aftercol] : "");
 					$isselected = (in_array($value['id'], $selected )?' SELECTED ':'');
 					
 					$return .= '<option '.$isselected.' value="'.$value['id'].'" />' . $beforecol2 . $value[$col] . $aftercol2 . '<br />';
@@ -169,8 +169,8 @@ function mr_checkboxes($data = array(), $table = '', $col = '', $name = '', $bef
 				$return .= '</select>';
 			} else {
 				foreach ($tabledata as $key => $value) {
-					$beforecol = $value[$beforecol] . ' ';
-					$aftercol =  ' ' . $value[$aftercol];
+					$beforecol2 =  (array_key_exists($beforecol, $value) ? ' ' . $value[$beforecol] : "");
+					$aftercol2 =  (array_key_exists($aftercol, $value) ? ' ' . $value[$aftercol] : "");
 					$checked = (in_array($value['id'], $selected )?' CHECKED ':'');
 					
 					$return .= '<input '.$checked.' type="checkbox" name="'.$table.'[]" value="'.$value['id'].'" />'. $beforecol2 . $value[$col] . $aftercol2 . '<br />';
@@ -178,12 +178,14 @@ function mr_checkboxes($data = array(), $table = '', $col = '', $name = '', $bef
 			}
 
 		
-	} else {
-		foreach ($tabledata as $key => $value) {
-			$return .= '<input type="checkbox" name="'.$table.'[]" value="'.$value['id'].'" />'. $beforecol2 . $value[$col] . $aftercol2 .'<br />';
-		}
+		} else {
+			foreach ($tabledata as $key => $value) {
+				$beforecol2 =  (array_key_exists($beforecol, $value) ? ' ' . $value[$beforecol] : "");
+				$aftercol2 =  (array_key_exists($aftercol, $value) ? ' ' . $value[$aftercol] : "");
+				$return .= '<input type="checkbox" name="'.$table.'[]" value="'.$value['id'].'" />'. $beforecol2 . $value[$col] . $aftercol2 .'<br />';
+			}
 		
-	}
+		}
 
 	
 	return $return;

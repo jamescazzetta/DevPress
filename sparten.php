@@ -76,34 +76,34 @@ if ( array_key_exists('edit_id', $_GET)) {
 
 
 echo "<section class='db-edit'>";
-
-switch ($_GET['action']) {
-	case 'saveedit':
-		saveit('',$thetable);
-		$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-		editit($data, $thetable);
-	break;
-	case 'savenew':
-		saveit(mr_createentry($thetable), $thetable);
-		$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-		editit($data, $thetable);
-	break;
-	case 'edit':
-		editit($data, $thetable);
-	break;
-	case 'new':
-		editit($data, $thetable);
-	break;
-	case 'uploadimage':
-	$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-		uploadit($data, $thetable);
-	break;
+if ( array_key_exists('action', $_GET)) {
+	switch ($_GET['action']) {
+		case 'saveedit':
+			saveit('',$thetable);
+			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
+			editit($data, $thetable);
+		break;
+		case 'savenew':
+			saveit(mr_createentry($thetable), $thetable);
+			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
+			editit($data, $thetable);
+		break;
+		case 'edit':
+			editit($data, $thetable);
+		break;
+		case 'new':
+			editit($data, $thetable);
+		break;
+		case 'uploadimage':
+			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
+			uploadit($data, $thetable);
+		break;
 	
-	default:
-		echo "<p>Wählen Sie einen Datensatz unten aus, oder kreieren Sie eine neue um diese dann hier zu bearbeiten.</p>";
-	break;
+		default:
+			echo "<p>Wählen Sie einen Datensatz unten aus, oder kreieren Sie eine neue um diese dann hier zu bearbeiten.</p>";
+		break;
+	}
 }
-
 echo "</section>";
 
 
