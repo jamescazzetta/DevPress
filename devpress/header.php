@@ -1,6 +1,6 @@
 <?php
-session_start();
-include('devpress/xperto_check.php');
+//session_start();
+//include('devpress/xperto_check.php');
 
 //plugins
 include('plugins/upload.php');

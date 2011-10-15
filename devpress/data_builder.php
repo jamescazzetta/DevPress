@@ -4,7 +4,6 @@
 // ================
 
 
-
 /* Retrieves data from db and put it into an array */
 function data($args, $filters = array(), $single = ''){
 	$tablename = $GLOBALS['tableprefix'] . '_' . $args['table'];
@@ -82,7 +81,7 @@ function data($args, $filters = array(), $single = ''){
 			
 						}
 					}
-				//is m2m
+	
 				} else {
 					//M2M
 					//check the tween table to see with which table it is connected (its possible that it is connected with one of the joins!!!)

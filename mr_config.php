@@ -2,9 +2,9 @@
 
 /* DB */
 $DB_HOST	= "localhost";
-$DB_BN		= "argla_ben";
-$DB_PW		= "argla_1928";
-$DB_DB		= "pcardso_algra";
+$DB_BN		= "root";
+$DB_PW		= "metalgear3";
+$DB_DB		= "devpress2";
 
 
 //MySQL connect

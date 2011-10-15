@@ -89,8 +89,7 @@ function mr_savetextfielddata($table, $name, $newid = ''){
 	$value = $name;
 	$id = ($newid ? $newid : $_POST['id']);
 	$where = " AND id = $id";
-	
-	
+		
 		//row exists already? then update values
 		$sql ="UPDATE {$GLOBALS['tableprefix']}_{$table}
 		SET $name = '$_POST[$name]'
@@ -227,6 +226,30 @@ function mr_savecheckboxes($sourcetable, $savetable, $newid){
 	
 	
 };
+
+
+
+
+//iamges
+function mr_self_image($data = '', $table = '', $col = '', $name = '', $beforecol = '', $aftercol = '') {
+		
+	if ($data) {
+		if ($data[$col]) {
+			$value = ($data[$col] ? $data[$col] : '');
+			$return = "<img src='" . $data[$col] . "' alt='image' />";
+			$return .= "<br /><a href='?action=uploadimage&edit_id=".$data['id']."'>Neues Bild hochladen</a>";
+		} else {
+			$value = ($data[$col] ? $data[$col] : '');
+			$return = "<a href='?action=uploadimage&edit_id=".$data['id']."'>Bild hochladen</a>";
+		}
+	} else {
+		$return = "Sie können ein Bild hochladen sobale Sie die anderen Daten eingetragen haben.";
+	}
+	
+
+	
+	return $return;
+}
 
 
 function mr_BuildListTable($data, $constr){

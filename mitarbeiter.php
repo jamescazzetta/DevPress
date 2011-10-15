@@ -39,8 +39,6 @@ function saveit($newid = '', $thetable){
 }
 
 
-
-
 function editit($data, $thetable){
 	echo "<section id='db-edit'>";	
 	echo mr_startform($data, $thetable);
@@ -63,8 +61,7 @@ function editit($data, $thetable){
 		
 		echo "<div class='db-edit-col'>";
 			echo '<h4 class="db-edit-title">Bild</h4>';
-			echo "<img src='" . $data['bild'] . "' alt='image' />";
-			echo "<br /><a href='?action=uploadimage&edit_id=".$data['id']."'>Neues Bild hochladen</a>";
+			echo mr_self_image($data, $thetable, 'bild', 'Bild');
 		echo "</div>";
 	
 		echo "<div class='db-edit-col'>";
@@ -102,34 +99,34 @@ if ( array_key_exists('edit_id', $_GET)) {
 
 
 echo "<section class='db-edit'>";
-
-switch ($_GET['action']) {
-	case 'saveedit':
-		saveit('',$thetable);
+if ( array_key_exists('action', $_GET)) {
+	switch ($_GET['action']) {
+		case 'saveedit':
+			saveit('',$thetable);
+			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
+			editit($data, $thetable);
+		break;
+		case 'savenew':
+			$newid = mr_createentry($thetable);
+			saveit($newid, $thetable);
+			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $newid), 1);
+			editit($data, $thetable);
+			
+		break;
+		case 'edit':
+			editit($data, $thetable);
+		break;
+		case 'new':
+			editit($data, $thetable);
+		break;
+		case 'uploadimage':
 		$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-		editit($data, $thetable);
-	break;
-	case 'savenew':
-		saveit(mr_createentry($thetable), $thetable);
-		$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-		editit($data, $thetable);
-	break;
-	case 'edit':
-		editit($data, $thetable);
-	break;
-	case 'new':
-		editit($data, $thetable);
-	break;
-	case 'uploadimage':
-	$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-		uploadit($data, $thetable);
-	break;
-	
-	default:
-		echo "<p>Diese Einträge werden nach <a href='sparten.php' >Sparten</a> geordnet und werden auf der <a href='http://algra.pcardsolution.ch/v3/mitarbeiter.php'>Ansprechspartner</a> Seite angezeigt.</p>";
-	break;
+			uploadit($data, $thetable);
+		break;
+	}
+} else {
+	echo "<p>Diese Einträge werden nach <a href='sparten.php' >Sparten</a> geordnet und werden auf der <a href='http://algra.pcardsolution.ch/v3/mitarbeiter.php'>Ansprechspartner</a> Seite angezeigt.</p>";
 }
-
 echo "</section>";
 
 

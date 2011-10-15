@@ -4,7 +4,7 @@
 // ===============
 $args = array(
 	'name' => 'mitarbeiter',
-	'hyrarchical' => FALSE, //adds parent_id
+	'hyrarchical' => FALSE,
 );
 set_table($args);
 
@@ -64,8 +64,6 @@ $args = array(
 );
 add_table_data($args);
 
-
-
 // Gruppen
 $args = array(
 	'table' => 'mitarbeiter',
@@ -74,6 +72,17 @@ $args = array(
 );
 add_table_data($args);
 
+
+
+// ===========
+// = Gruppen =
+// ===========
+$args = array(
+	'name' => 'gruppen',
+	'hyrarchical' => FALSE,
+);
+set_table($args);
+
 $args = array(
 	'table' => 'gruppen',
 	'relation' => 'self',
@@ -81,8 +90,6 @@ $args = array(
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
-
-
 
 
 
