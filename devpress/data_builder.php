@@ -7,14 +7,7 @@
 /* Retrieves data from db and put it into an array */
 function data($args, $filters = array(), $single = ''){
 	$tablename = $GLOBALS['tableprefix'] . '_' . $args['table'];
-	
-	$where = '';
-	
-	foreach ($filters as $key => $value) {
-		$where .= " AND $key = $value ";
-	}
-	
-	
+
 	
 	$tablefields = mysql_fetch_fields($tablename);
 	$joins = (array_key_exists('joins', $args) ? $args['joins'] : array());	
@@ -25,10 +18,19 @@ function data($args, $filters = array(), $single = ''){
 	foreach ($tablefields as $tablefield) {$tablefield_names[] = $tablename . '.' . $tablefield->name;}
 	$selects = implode(", ", $tablefield_names);
 	
+	//filters
+	$where = "WHERE 0=0 ";
+	if (array_key_exists("parent_id", $filters)) {
+		if ($filters["parent_id"]) {
+			$where .= "AND ".$tablename.".parent_id = ".$filters["parent_id"]." ";
+		}	
+	}
+
 	
 	//get table data
-	$sql = " SELECT $selects FROM $tablename WHERE 0=0 $where ORDER BY $tablename.roworder DESC";
+	$sql = " SELECT $selects FROM $tablename $where ORDER BY $tablename.roworder DESC";	
 	$result2 = mysql_query($sql) or trigger_error("SQL", E_USER_ERROR);
+	
 	
     while ($table_data = mysql_fetch_array($result2)) {
 		
@@ -41,7 +43,7 @@ function data($args, $filters = array(), $single = ''){
 			}
 		}
 		
-		//get join data
+		//get join data 
 		if($joins) : 
 			foreach ($joins as $key => $join) {	
 				$join = $GLOBALS['tableprefix'] . '_' . $join;
@@ -66,8 +68,10 @@ function data($args, $filters = array(), $single = ''){
 							$result = mysql_query($sql_sub) or trigger_error("SQL", E_USER_ERROR);
 							$i = 0;
 							
-							while ($join_sql = mysql_fetch_array($result)) { // loop through the target rows
+							while ($join_sql = mysql_fetch_array($result)) { // loop through the target rows								
 								foreach ($targetfields as $key => $targetfield) {
+									
+									
 									if ($single) {
 										$data[$join][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
 									} else {

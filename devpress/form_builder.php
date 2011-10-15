@@ -229,10 +229,61 @@ function mr_savecheckboxes($sourcetable, $savetable, $newid){
 	
 };
 
+//hyrachie
+function mr_hyr_select(
+		$data,
+		$args = array(
+			"table" => "", 
+			"label" => "Parent",
+			"colvalues" => array(),
+			"valueseperation" => " ",
+			"parent_id" => 0
+		)
+	){
+	
+	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];
+	$target_data = $data[$target_table];
+	
+	$return = "";
+	
+	//put all connected ids into an array
+	$selected = array();
+		foreach ($target_data as $key => $value) {
+			$selected[] = $value['id'];
+		}
+	
+
+	
+	$args2 = array("table" => $args["table"]);
+	$filter2 =  array(	"parent_id" => $args["parent_id"]);
+	$connectiondata = data($args2, $filter2);
+	
+
+	
+		if ($args["parent_id"] == 0) {$return .= "<label>$args[label]</label>";}
+		$return .= "<ul>";
+		foreach ($connectiondata as $key => $value) {
+			$return .= "<li>";
+			$checked = (in_array($value['id'], $selected )?' CHECKED ':'');
+			$inputtxt = "";
+			foreach ($args["colvalues"] as $txt) {
+				$inputtxt .= ($inputtxt != "" ? $args["valueseperation"] : "");
+				$inputtxt .= $target_data[$value['id']][$txt]; 
+			}
+						
+
+			
+			$return .= '<input '.$checked.' type="checkbox" name="'.$args["table"].'[]" value="'.$value['id'].'" />'. $inputtxt;
+			mr_hyr_select($data, array ("table" => $args["table"], "colvalues" => $args["colvalues"], "valueseperation" => $args["valueseperation"], "parent_id" => $data["id"]));
+			$return .= "</li>";
+		}
+		$return .= "</ul>";
+	
+	return $return;
+}
 
 
-
-//iamges
+//images
 function mr_self_image($data = '', $table = '', $col = '', $name = '', $beforecol = '', $aftercol = '') {
 		
 	if ($data) {
