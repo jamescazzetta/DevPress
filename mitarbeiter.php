@@ -53,6 +53,7 @@ function editit($data, $thetable){
 		echo "<div class='db-edit-col'>";
 			echo '<h4 class="db-edit-title">Sparten zuteilung</h4>';
 			//echo mr_checkboxes($data, 'gruppen', 'sparte', 'Sparte(n)');
+			/*
 			echo mr_hyr_select( 
 				$data,
 				array(
@@ -62,6 +63,7 @@ function editit($data, $thetable){
 					"valueseperation" => " "
 				)
 			);
+			*/
 		echo "</div>";
 		
 		echo "<div class='db-edit-col'>";

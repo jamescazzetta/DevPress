@@ -241,8 +241,10 @@ function mr_hyr_select(
 	
 	//put all connected ids into an array
 	$selected = array();
-	foreach ($data[$target_table] as $key => $value) {
-		$selected[] = $value['id'];
+	if (array_key_exists($target_table, $data)) {
+		foreach ($data[$target_table] as $key => $value) {
+			$selected[] = $value['id'];
+		}
 	}
 	
 	$args2 = array("table" => $args["table"]);

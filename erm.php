@@ -98,7 +98,7 @@ add_table_data($args);
 // ===========
 $args = array(
 	'name' => 'partner',
-	'hyrarchical' => FALSE, //adds parent_id
+	'hyrarchical' => TRUE, //adds parent_id
 );
 set_table($args);
 
