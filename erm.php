@@ -79,7 +79,7 @@ add_table_data($args);
 // ===========
 $args = array(
 	'name' => 'gruppen',
-	'hyrarchical' => TRUE,
+	'hyrarchical' => FALSE,
 );
 set_table($args);
 

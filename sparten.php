@@ -45,7 +45,12 @@ function editit($data, $thetable){
 			echo '<h4 class="db-edit-title">Aktionen</h4>';
 			echo mr_submitbutton($value = 'Apply');
 		echo "</div>";
-	
+		
+		echo "<div class='db-edit-col db-edit-submit'>";
+			echo '<h4 class="db-edit-title">Aktionen</h4>';
+			//sdfjkl
+		echo "</div>";
+			
 		echo mr_endform();
 	echo "<div class='clear'>&nbsp;</div>";	
 	echo "</section>";

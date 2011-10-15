@@ -441,6 +441,19 @@ include('erm.php');
 				}
 
 			/* db-db-edit*/
+			
+			.db-edit ul{
+				padding:2px 0px 7px 20px;
+			}
+			
+			.db-edit ul.parent{
+				padding-left:0px;
+				
+			}
+			
+			.db-edit ul li{
+				margin:0px;
+			}
 			.db-edit{
 				background-attachment: scroll;
 				background-clip: border-box;

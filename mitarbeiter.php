@@ -57,10 +57,9 @@ function editit($data, $thetable){
 				$data,
 				array(
 					"table" => "gruppen",
-					"label" => "Übergeordnet",
+					"label" => "Sparten",
 					"colvalues" => array("sparte"),
-					"valueseperation" => " ",
-					"parent_id" => 0
+					"valueseperation" => " "
 				)
 			);
 		echo "</div>";
@@ -72,7 +71,7 @@ function editit($data, $thetable){
 	
 		echo "<div class='db-edit-col'>";
 			echo '<h4 class="db-edit-title">Aktionen</h4>';
-			echo mr_submitbutton($value = 'Ünbernehmen');
+			echo mr_submitbutton($value = 'Übernehmen');
 			echo mr_cancelbutton($value = 'Abbrechen');
 			
 		echo "</div>";

@@ -229,52 +229,60 @@ function mr_savecheckboxes($sourcetable, $savetable, $newid){
 	
 };
 
-//hyrachie
+//hyrachie #### actualy checkboxes with hyrarchical layout (should be combined)
 function mr_hyr_select(
 		$data,
-		$args = array(
-			"table" => "", 
-			"label" => "Parent",
-			"colvalues" => array(),
-			"valueseperation" => " ",
-			"parent_id" => 0
-		)
+		$args = array()
 	){
 	
-	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];
-	$target_data = $data[$target_table];
-	
+	if (! array_key_exists('parent_id', $args)) { $args['parent_id'] = 'root';}
+	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
 	$return = "";
 	
 	//put all connected ids into an array
 	$selected = array();
-		foreach ($target_data as $key => $value) {
-			$selected[] = $value['id'];
-		}
-	
-
+	foreach ($data[$target_table] as $key => $value) {
+		$selected[] = $value['id'];
+	}
 	
 	$args2 = array("table" => $args["table"]);
 	$filter2 =  array(	"parent_id" => $args["parent_id"]);
 	$connectiondata = data($args2, $filter2);
 	
-
+	$isroot = FALSE;
+	if ($args['parent_id'] == 'root') {
+		$isroot = TRUE;
+	}
 	
-		if ($args["parent_id"] == 0) {$return .= "<label>$args[label]</label>";}
-		$return .= "<ul>";
+		if ($isroot) {$return .= "<label>$args[label]</label>";}
+		$return .= "<ul class='".($isroot ? 'parent' : 'child')."'>";
 		foreach ($connectiondata as $key => $value) {
+			
+			
 			$return .= "<li>";
 			$checked = (in_array($value['id'], $selected )?' CHECKED ':'');
 			$inputtxt = "";
 			foreach ($args["colvalues"] as $txt) {
 				$inputtxt .= ($inputtxt != "" ? $args["valueseperation"] : "");
-				$inputtxt .= $target_data[$value['id']][$txt]; 
+				$inputtxt .= $value[$txt]; 
 			}
-						
-
 			
 			$return .= '<input '.$checked.' type="checkbox" name="'.$args["table"].'[]" value="'.$value['id'].'" />'. $inputtxt;
-			mr_hyr_select($data, array ("table" => $args["table"], "colvalues" => $args["colvalues"], "valueseperation" => $args["valueseperation"], "parent_id" => $data["id"]));
+			$children = mr_hyr_select( 
+				$data,
+				array(
+					"table" => $args['table'],
+					"label" => $args['label'],
+					"colvalues" => $args['colvalues'],
+					"valueseperation" => $args['valueseperation'],
+					"parent_id" => $value['id']
+				)
+			);
+	
+			if ($children != "<ul class='child'></ul>") {
+				$return .= $children;
+			}
+			
 			$return .= "</li>";
 		}
 		$return .= "</ul>";

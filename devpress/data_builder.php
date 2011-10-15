@@ -13,17 +13,24 @@ function data($args, $filters = array(), $single = ''){
 	$joins = (array_key_exists('joins', $args) ? $args['joins'] : array());	
 	$data = ($single ? '' : array());
 	
-	// retrieve all the fields 
+
+	
 	$tablefield_names = array();
 	foreach ($tablefields as $tablefield) {$tablefield_names[] = $tablename . '.' . $tablefield->name;}
 	$selects = implode(", ", $tablefield_names);
 	
+	// check if is hyrarchical
+	$sql = "SELECT parent_id FROM $tablename";	
+	$hyr = (mysql_query($sql) ? TRUE : FALSE);
+		
 	//filters
 	$where = "WHERE 0=0 ";
-	if (array_key_exists("parent_id", $filters)) {
-		if ($filters["parent_id"]) {
+	if (array_key_exists("parent_id", $filters) && $hyr == TRUE) {
+		if ($filters["parent_id"] == 'root') {
+			$where .= "AND ".$tablename.".parent_id = 0 ";
+		} else {
 			$where .= "AND ".$tablename.".parent_id = ".$filters["parent_id"]." ";
-		}	
+		}
 	}
 
 	
