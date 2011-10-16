@@ -44,17 +44,22 @@ function editit($data, $thetable){
 				"colvalues" => array("vorname", "nachname"),
 				"valueseperation" => " "
 			);
-			echo mr_checkboxes($args, $data);		echo "</div>";
-
-		echo "<div class='db-edit-col db-edit-submit'>";
-			echo '<h4 class="db-edit-title">Aktionen</h4>';
-			echo mr_submitbutton($value = 'Apply');
+			echo mr_checkboxes($args, $data);;
 		echo "</div>";
 		
 		echo "<div class='db-edit-col db-edit-submit'>";
 			echo '<h4 class="db-edit-title">Aktionen</h4>';
-			//sdfjkl
+			$args = array(
+				"table" => $thetable,
+				"label" => "Übergeordnet",
+				"colvalues" => array("sparte"),
+				"valueseperation" => " "
+			);
+			echo mr_parentselect($args, $data);
+			echo mr_submitbutton($value = 'Apply');
 		echo "</div>";
+		
+
 			
 		echo mr_endform();
 	echo "<div class='clear'>&nbsp;</div>";	
@@ -130,7 +135,12 @@ $constr = array(
 			'name' => 'sparte',
 			'title' => 'Sparte',
 			'type' => 'title'
-		)
+		),
+	2 => array(
+			'name' => 'parent_id',
+			'title' => 'Parent ID',
+			'type' => 'normal'
+		),
 	
 );
 echo '<section class="dp-list">';

@@ -138,6 +138,7 @@ function mr_savetextareadata($table, $name){
 }
 
 
+//checkboxes
 function mr_checkboxes($args, $data){
 	
 	if (! array_key_exists('parent_id', $args)) { $args['parent_id'] = 'root';}
@@ -159,7 +160,7 @@ function mr_checkboxes($args, $data){
 		$isroot = TRUE;
 	}
 	
-		if ($isroot) {$return .= "<label>$args[label]</label>";}
+		//if ($isroot) {$return .= "<label>$args[label]</label>";}
 		if ($connectiondata > 0) {$return .= "<ul class='".($isroot ? 'parent' : 'child')."'>";} else {return;}
 		foreach ($connectiondata as $key => $value) {
 			
@@ -218,11 +219,41 @@ function mr_savecheckboxes($sourcetable, $savetable, $newid){
 			
 			}
 		}
-	
-	
-	
-	
 };
+
+
+
+
+//parentselect
+function mr_parentselect($args, $data){
+	
+	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
+	$return = "";
+	$currentid = $data['parent_id'];
+	
+	$return .= "<label>$args[label]</label>";
+	$return .= "<select name='parent_id'>";
+	$return .= "<option value='0'>None</option>";
+
+	
+	$optiondatas = data(array('table' => $args['table']));
+	
+	
+	foreach ($optiondatas as $optiondata) {
+		$selected = ($currentid == $optiondata['id'] ?' SELECTED ':'');
+		
+		$return .= "<option $selected value='$optiondata[id]'>";
+		$txt = "";
+		foreach ($args["colvalues"] as $col) {
+			$txt .= ($txt != "" ? $args["valueseperation"] : "");
+			$txt .= $optiondata[$col]; 
+		}
+		$return .= $txt . '</option>';
+	}
+	$return .= "</select>";
+	
+	return $return;
+}
 
 
 
