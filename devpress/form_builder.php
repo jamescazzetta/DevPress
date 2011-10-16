@@ -176,7 +176,7 @@ function mr_checkboxes($args, $data){
 			//children
 			if (has_children($args['table'],$value['id'])) {
 				$args['parent_id'] = $value['id'];
-				$return .= mr_hyr_select($data, $args);
+				$return .= mr_checkboxes($args, $data );
 			}
 			
 			$return .= "</li>";

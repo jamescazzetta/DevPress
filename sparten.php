@@ -38,8 +38,13 @@ function editit($data, $thetable){
 	
 		echo "<div class='db-edit-col'>";
 			echo '<h4 class="db-edit-title">Mitarbeiter</h4>';
-			echo mr_checkboxes($data, 'mitarbeiter', 'nachname', 'Mitarbeiter', 'vorname');
-		echo "</div>";
+			$args = array(
+				"table" => "mitarbeiter",
+				"label" => "Verknüpfte Mitarbeiter",
+				"colvalues" => array("vorname", "nachname"),
+				"valueseperation" => " "
+			);
+			echo mr_checkboxes($args, $data);		echo "</div>";
 
 		echo "<div class='db-edit-col db-edit-submit'>";
 			echo '<h4 class="db-edit-title">Aktionen</h4>';

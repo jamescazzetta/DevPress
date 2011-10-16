@@ -51,9 +51,8 @@ function endsWith($needle, $haystack)
 // conditionals
 
 function has_children($table, $id){
-	$sql = "SELECT id FROM $table WHERE parent_id = $id";
+	$sql = "SELECT parent_id FROM $GLOBALS[tableprefix]_$table WHERE parent_id = $id";	
 	return (mysql_query($sql) ? TRUE : FALSE);
-	
 }
 
 
