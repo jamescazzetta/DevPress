@@ -20,8 +20,8 @@ function data($args, $filters = array(), $single = ''){
 	$selects = implode(", ", $tablefield_names);
 	
 	// check if is hyrarchical
-	$sql = "SELECT parent_id FROM $tablename";	
-	$hyr = (mysql_query($sql) ? TRUE : FALSE);
+	$testsql = "SELECT parent_id FROM $tablename";	
+	$hyr = (mysql_query($testsql) ? TRUE : FALSE);
 		
 	//filters
 	$where = "WHERE 0=0 ";

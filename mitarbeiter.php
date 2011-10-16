@@ -52,18 +52,14 @@ function editit($data, $thetable){
 
 		echo "<div class='db-edit-col'>";
 			echo '<h4 class="db-edit-title">Sparten zuteilung</h4>';
-			//echo mr_checkboxes($data, 'gruppen', 'sparte', 'Sparte(n)');
-			/*
-			echo mr_hyr_select( 
-				$data,
-				array(
-					"table" => "gruppen",
-					"label" => "Sparten",
-					"colvalues" => array("sparte"),
-					"valueseperation" => " "
-				)
+			$args = array(
+				"table" => "gruppen",
+				"label" => "Sparten",
+				"colvalues" => array("sparte"),
+				"valueseperation" => " "
 			);
-			*/
+			echo mr_checkboxes($args, $data);
+			
 		echo "</div>";
 		
 		echo "<div class='db-edit-col'>";

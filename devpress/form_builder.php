@@ -138,55 +138,50 @@ function mr_savetextareadata($table, $name){
 }
 
 
-//checkboxes
-function mr_checkboxes($data = array(), $table = '', $col = '', $name = '', $beforecol = '', $aftercol = ''){
-	$return = '';
-	$selected = '';
-	$thetable = $GLOBALS['tableprefix'].'_'.$table;
-		if (array_key_exists($thetable, $data)) {
-			foreach ($data[$thetable] as $key => $value) {
-				$selected[] = $value['id'];
-			}
+function mr_checkboxes($args, $data){
+	
+	if (! array_key_exists('parent_id', $args)) { $args['parent_id'] = 'root';}
+	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
+	$return = "";
+	
+	//put all connected ids into an array
+	$selected = array();
+	if (array_key_exists($target_table, $data)) {
+		foreach ($data[$target_table] as $key => $value) {
+			$selected[] = $value['id'];
 		}
-	
-	
+	}
 
-	$return .= "<label>$name</label>";
-	$tabledata = data(array('table' => $table));
-		
-		if (array_key_exists($thetable, $data)) {	
+
+	$connectiondata = data( array("table" => $args["table"]),  array("parent_id" => $args["parent_id"]) );
+	$isroot = FALSE;
+	if ($args['parent_id'] == 'root') {
+		$isroot = TRUE;
+	}
+	
+		if ($isroot) {$return .= "<label>$args[label]</label>";}
+		if ($connectiondata > 0) {$return .= "<ul class='".($isroot ? 'parent' : 'child')."'>";} else {return;}
+		foreach ($connectiondata as $key => $value) {
 			
-			//if there are more then 10 do a multiselect instead
-			if (count($tabledata) > 10) {
-				$return .= '<select name="'.$table.'[]" class="multipleselect" multiple="multiple">';
-				foreach ($tabledata as $key => $value) {
-					$beforecol2 = $value[$beforecol] . ' ';
-					$aftercol2 =  (array_key_exists($aftercol, $value) ? ' ' . $value[$aftercol] : "");
-					$isselected = (in_array($value['id'], $selected )?' SELECTED ':'');
-					
-					$return .= '<option '.$isselected.' value="'.$value['id'].'" />' . $beforecol2 . $value[$col] . $aftercol2 . '<br />';
-				}
-				$return .= '</select>';
-			} else {
-				foreach ($tabledata as $key => $value) {
-					$beforecol2 =  (array_key_exists($beforecol, $value) ? ' ' . $value[$beforecol] : "");
-					$aftercol2 =  (array_key_exists($aftercol, $value) ? ' ' . $value[$aftercol] : "");
-					$checked = (in_array($value['id'], $selected )?' CHECKED ':'');
-					
-					$return .= '<input '.$checked.' type="checkbox" name="'.$table.'[]" value="'.$value['id'].'" />'. $beforecol2 . $value[$col] . $aftercol2 . '<br />';
-				}			
+			$return .= "<li>";
+			$checked = (in_array($value['id'], $selected )?' CHECKED ':'');
+			$inputtxt = "";
+			foreach ($args["colvalues"] as $txt) {
+				$inputtxt .= ($inputtxt != "" ? $args["valueseperation"] : "");
+				$inputtxt .= $value[$txt]; 
 			}
-
-		
-		} else {
-			foreach ($tabledata as $key => $value) {
-				$beforecol2 =  (array_key_exists($beforecol, $value) ? ' ' . $value[$beforecol] : "");
-				$aftercol2 =  (array_key_exists($aftercol, $value) ? ' ' . $value[$aftercol] : "");
-				$return .= '<input type="checkbox" name="'.$table.'[]" value="'.$value['id'].'" />'. $beforecol2 . $value[$col] . $aftercol2 .'<br />';
+			
+			$return .= '<input '.$checked.' type="checkbox" name="'.$args["table"].'[]" value="'.$value['id'].'" />'. $inputtxt;
+			
+			//children
+			if (has_children($args['table'],$value['id'])) {
+				$args['parent_id'] = $value['id'];
+				$return .= mr_hyr_select($data, $args);
 			}
-		
+			
+			$return .= "</li>";
 		}
-
+		$return .= "</ul>";
 	
 	return $return;
 }
@@ -229,68 +224,6 @@ function mr_savecheckboxes($sourcetable, $savetable, $newid){
 	
 };
 
-//hyrachie #### actualy checkboxes with hyrarchical layout (should be combined)
-function mr_hyr_select(
-		$data,
-		$args = array()
-	){
-	
-	if (! array_key_exists('parent_id', $args)) { $args['parent_id'] = 'root';}
-	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
-	$return = "";
-	
-	//put all connected ids into an array
-	$selected = array();
-	if (array_key_exists($target_table, $data)) {
-		foreach ($data[$target_table] as $key => $value) {
-			$selected[] = $value['id'];
-		}
-	}
-	
-	$args2 = array("table" => $args["table"]);
-	$filter2 =  array(	"parent_id" => $args["parent_id"]);
-	$connectiondata = data($args2, $filter2);
-	
-	$isroot = FALSE;
-	if ($args['parent_id'] == 'root') {
-		$isroot = TRUE;
-	}
-	
-		if ($isroot) {$return .= "<label>$args[label]</label>";}
-		$return .= "<ul class='".($isroot ? 'parent' : 'child')."'>";
-		foreach ($connectiondata as $key => $value) {
-			
-			
-			$return .= "<li>";
-			$checked = (in_array($value['id'], $selected )?' CHECKED ':'');
-			$inputtxt = "";
-			foreach ($args["colvalues"] as $txt) {
-				$inputtxt .= ($inputtxt != "" ? $args["valueseperation"] : "");
-				$inputtxt .= $value[$txt]; 
-			}
-			
-			$return .= '<input '.$checked.' type="checkbox" name="'.$args["table"].'[]" value="'.$value['id'].'" />'. $inputtxt;
-			$children = mr_hyr_select( 
-				$data,
-				array(
-					"table" => $args['table'],
-					"label" => $args['label'],
-					"colvalues" => $args['colvalues'],
-					"valueseperation" => $args['valueseperation'],
-					"parent_id" => $value['id']
-				)
-			);
-	
-			if ($children != "<ul class='child'></ul>") {
-				$return .= $children;
-			}
-			
-			$return .= "</li>";
-		}
-		$return .= "</ul>";
-	
-	return $return;
-}
 
 
 //images

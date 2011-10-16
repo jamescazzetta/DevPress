@@ -45,4 +45,18 @@ function endsWith($needle, $haystack)
     return (substr($haystack, $start) === $needle);
 }
 
+
+
+
+// conditionals
+
+function has_children($table, $id){
+	$sql = "SELECT id FROM $table WHERE parent_id = $id";
+	return (mysql_query($sql) ? TRUE : FALSE);
+	
+}
+
+
+
+
 ?>
