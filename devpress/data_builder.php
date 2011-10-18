@@ -27,10 +27,13 @@ function data($args, $filters = array(), $single = ''){
 	$where = "WHERE 0=0 ";
 	if (array_key_exists("parent_id", $filters) && $hyr == TRUE) {
 		if ($filters["parent_id"] == 'root') {
-			$where .= "AND ".$tablename.".parent_id = 0 ";
+			$where .= " AND ".$tablename.".parent_id = 0 ";
 		} else {
-			$where .= "AND ".$tablename.".parent_id = ".$filters["parent_id"]." ";
+			$where .= " AND ".$tablename.".parent_id = ".$filters["parent_id"]." ";
 		}
+	}
+	if (array_key_exists("ID", $filters) && $hyr == TRUE) {
+			$where .= " AND ".$tablename.".id = $filters[ID] ";
 	}
 
 	

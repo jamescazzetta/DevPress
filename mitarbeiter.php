@@ -1,25 +1,8 @@
 <?php 
 include('devpress/header.php'); 
-?>
-
-<?php include('nav.php'); ?>
-<section class="dp-title">
-  <hgroup>
-	<h2>Mitarbeiter<a href="mitarbeiter.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>
-  </hgroup>
-</section>
-
-
-<?php
-
+include('nav.php'); 
 $thetable = 'mitarbeiter';
 $joins = array('gruppen');
-
-//delete
-if (array_key_exists('delete', $_GET)) {
-	mr_deleteentry($thetable, $_GET['delete']);
-	mr_deletetweenentries($thetable, 'gruppen', $_GET['delete']);
-}
 
 
 function saveit($newid = '', $thetable){
@@ -30,7 +13,6 @@ function saveit($newid = '', $thetable){
 	mr_savetextfielddata($thetable, 'telefon', $newid);
 	mr_savetextfielddata($thetable, 'telefax', $newid);
 	mr_savetextfielddata($thetable, 'roworder', $newid);
-	
 	mr_savecheckboxes($thetable, 'gruppen', $newid);
 }
 
@@ -71,6 +53,7 @@ function editit($data, $thetable){
 			echo '<h4 class="db-edit-title">Aktionen</h4>';
 			echo mr_submitbutton($value = 'Übernehmen');
 			echo mr_cancelbutton($value = 'Abbrechen');
+			echo mr_deletebutton($data['id'], $value = 'Löschen');
 			
 		echo "</div>";
 	
@@ -90,6 +73,20 @@ function uploadit($data, $table){
 	echo "</section>";
 }
 
+
+
+
+echo '<section class="dp-title">';
+  echo '<hgroup>';
+	echo '<h2>Mitarbeiter<a href="mitarbeiter.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>';
+  echo '</hgroup>';
+echo '</section>';
+
+//delete
+if (array_key_exists('delete', $_GET)) {
+	mr_deleteentry($thetable, $_GET['delete']);
+	mr_deletetweenentries($thetable, 'gruppen', $_GET['delete']);
+}
 
 //get data if id is given 
 if ( array_key_exists('edit_id', $_GET)) {
@@ -131,12 +128,6 @@ if ( array_key_exists('action', $_GET)) {
 	echo "<p>Diese Einträge werden nach <a href='sparten.php' >Sparten</a> geordnet und werden auf der <a href='http://algra.pcardsolution.ch/v3/mitarbeiter.php'>Ansprechspartner</a> Seite angezeigt.</p>";
 }
 echo "</section>";
-
-
-
-
-
-//uploads
 
 
 //list
@@ -182,11 +173,11 @@ $constr = array(
 			'title' => 'Sparte',
 			'type' => 'm2m',
 			'm2mcol' => 'sparte'
-		),
+		)
 	
 );
 echo '<section class="dp-list">';
-mr_BuildListTable($data, $constr);
+mr_BuildListTable($data, $constr, $thetable);
 echo '</section>';
 
 

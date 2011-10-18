@@ -35,6 +35,9 @@ function mr_cancelbutton($value){
 
 }
 
+function mr_deletebutton($id, $value){
+	return "<a href='?delete='.$id.'' class='linktobutton'>$value</a>";
+}
 
 function mr_createentry($table){
 		$sql = "INSERT INTO {$GLOBALS['tableprefix']}_{$table}(id)
@@ -229,33 +232,52 @@ function mr_parentselect($args, $data){
 	
 	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
 	$return = "";
-	$currentid = $data['parent_id'];
+	if ($data) {
+		$current_parentid = $data['parent_id'];
+		$current_id = $data['id'];
+	} else {
+		$current_parentid = 0;
+		$current_id = 0;
+	}
 	
 	$return .= "<label>$args[label]</label>";
 	$return .= "<select name='parent_id'>";
 	$return .= "<option value='0'>None</option>";
+
 
 	
 	$optiondatas = data(array('table' => $args['table']));
 	
 	
 	foreach ($optiondatas as $optiondata) {
-		$selected = ($currentid == $optiondata['id'] ?' SELECTED ':'');
-		
-		$return .= "<option $selected value='$optiondata[id]'>";
-		$txt = "";
-		foreach ($args["colvalues"] as $col) {
-			$txt .= ($txt != "" ? $args["valueseperation"] : "");
-			$txt .= $optiondata[$col]; 
+		if ($current_id != $optiondata['id']) {		
+			$selected = ($current_parentid == $optiondata['id'] ?' SELECTED ':'');
+				
+			$return .= "<option $selected value='$optiondata[id]'>";
+			$txt = "";
+			foreach ($args["colvalues"] as $col) {
+				$txt .= ($txt != "" ? $args["valueseperation"] : "");
+				$txt .= $optiondata[$col]; 
+			}
+			$return .= $txt . '</option>';
 		}
-		$return .= $txt . '</option>';
 	}
 	$return .= "</select>";
 	
 	return $return;
 }
 
-
+function mr_saveparentselect($table, $newid){
+	
+	$id = ($newid ? $newid : $_POST['id']);
+	
+	$sql ="UPDATE {$GLOBALS['tableprefix']}_{$table}
+	SET parent_id = '$_POST[parent_id]'
+	WHERE id = $id";
+	mysql_query($sql);
+	
+	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> {$GLOBALS['tableprefix']}_{$table} Parent_id with id $id changed to $_POST[parent_id]</p>", 3, "devpress/infos.log");
+}
 
 //images
 function mr_self_image($data = '', $table = '', $col = '', $name = '', $beforecol = '', $aftercol = '') {
@@ -279,7 +301,7 @@ function mr_self_image($data = '', $table = '', $col = '', $name = '', $beforeco
 }
 
 
-function mr_BuildListTable($data, $constr){
+function mr_BuildListTable($data, $constr, $thetable){
 	$order = 'asc';
 	$orderby = '';
 	
@@ -290,7 +312,8 @@ function mr_BuildListTable($data, $constr){
 		$orderby = $_GET['orderby'];
 	}
 	
-	$headfoot = '<tr><th id="cb" class="manage-column column-cb check-column"><input type="checkbox"></th>';
+	$headfoot = '<tr>';
+	$headfoot .= '<th id="cb" class="manage-column column-cb check-column"><!--<input type="checkbox">--></th>';
 	foreach ($constr as $key => $col) {
 		$it_orderby = 'asc';
 		if ($orderby == $col['name'] && $order == 'asc') {
@@ -300,44 +323,7 @@ function mr_BuildListTable($data, $constr){
 	}
 	$headfoot .= '</tr>';
 
-	
-	$content = '';
-	foreach ($data as $key => $dataitem) {
-		$options = '<div class="row-actions">
-			<span class="edit"><a href="?action=edit&edit_id='.$dataitem['id'].'" title="Edit this item">Edit</a> | </span>
-			<!--<span class="inline hide-if-no-js"><a href="#" class="editinline" title="Edit this item inline">Quick&nbsp;Edit</a> | </span>-->
-			<span class="trash"><a class="submitdelete" title="Move this item to the Trash" href="?delete='.$dataitem['id'].'">Delete</a></span>
-			</div>';
-		$content .=  '<tr id="post-' . $dataitem['id'] . '" class="author-self status-publish format-default iedit" valign="top">';
-		$content .= '<td class="column-cb"><input type="checkbox" name="post[]" value="'.$dataitem['id'].'" /></td>';
-		foreach ($constr as $col) {
-			switch ($col['type']) {
-				case 'title':
-					$content .= "<td><a href='?edit_id=$key'>" . $dataitem[$col['name']] . "</a>$options</td>";
-					break;
-				case 'm2m':
-				$m2table = $GLOBALS['tableprefix'].'_'.$col['name'];
-				
-					if (array_key_exists($m2table, $dataitem)) {
-						$implodeme = array();
-						foreach ($dataitem[$m2table] as $key => $value) {$implodeme[] = $value[$col['m2mcol']];}
-						$m2col = implode(', ', $implodeme);
-					} else {
-						$m2col = '';
-					}
-
-					$content .= "<td>" . $m2col . "</td>";
-					break;
-				case 'image':
-					$content .= "<td>" . ($dataitem['bild'] ? "<img src='" . $dataitem['bild'] . "' alt='image' />" : 'empty')."</td>";
-					break;
-				default:
-					$content .= "<td>" . $dataitem[$col['name']] . "</td>";
-					break;
-			}
-		}
-		$content .= '</tr>';
-	}
+	$content = mr_listrow($data, $constr, 0, $thetable);
 	
 
 	echo '<form id="whatever" action method="get">';
@@ -347,16 +333,16 @@ function mr_BuildListTable($data, $constr){
 		echo "<thead>";
 			echo $headfoot;
 		echo "</thead>";
-		echo "<thbody";
+		echo "<tbody>";
 			echo $content;
-		echo "</thbody>";
+		echo "</tbody>";
 		echo "<tfoot>";
 			echo $headfoot;
 		echo "</tfoot>";
 	echo "</table>";
 	
 	
-	
+	/*
 		echo '<div class="tablenav bottom">';
 			echo '<div class="alignleft actions">';
 				echo '<select name="action2">';
@@ -366,12 +352,70 @@ function mr_BuildListTable($data, $constr){
 				echo '</select>';
 			echo '<input type="submit" name="" id="doaction2" class="button-secondary action" value="Apply">';
 		echo '</div>';
+	*/
 	echo '</div>';
 	
 	echo '</form>';
 }
 
 
+
+
+function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
+	$return  = '';
+	foreach ($data as $key => $dataitem) {
+		//loop through all root items
+
+		if (array_key_exists('parent_id', $dataitem)) {
+			$current_parentid = $dataitem['parent_id'];
+		} else {
+			$current_parentid = 0;
+		}
+		if ($current_parentid == $parent_id) {
+			//if ($dataitem['parent_id'] == $parent_id) {$return .= '–';}
+				$options = '<div class="row-actions">
+				<span class="edit"><a href="?action=edit&edit_id='.$dataitem['id'].'" title="Edit this item">Edit</a> | </span>
+				<!--<span class="inline hide-if-no-js"><a href="#" class="editinline" title="Edit this item inline">Quick&nbsp;Edit</a> | </span>-->
+				<!--<span class="trash"><a class="submitdelete" title="Move this item to the Trash" href="?delete='.$dataitem['id'].'">Delete</a></span>-->
+				</div>';
+			$return .=  '<tr id="post-' . $dataitem['id'] . ' level_'.$level.'" class="author-self status-publish format-default iedit" valign="top">';
+			$return .= '<td class="column-cb"><!--<input type="checkbox" name="post[]" value="'.$dataitem['id'].'" />--></td>';
+			foreach ($constr as $col) {
+				switch ($col['type']) {
+					case 'title':
+						$pre = str_repeat("– ", $level);
+						$return .= "<td><a href='?action=edit&edit_id=$key'>" . $pre . $dataitem[$col['name']] . "</a>$options</td>";
+					break;
+					case 'm2m':
+					$m2table = $GLOBALS['tableprefix'].'_'.$col['name'];
+						if (array_key_exists($m2table, $dataitem)) {
+							$implodeme = array();
+							foreach ($dataitem[$m2table] as $key => $value) {$implodeme[] = $value[$col['m2mcol']];}
+							$m2col = implode(', ', $implodeme);
+						} else {
+							$m2col = '';
+						}
+						$return .= "<td>" . $m2col . "</td>";
+					break;
+					case 'image':
+						$return .= "<td>" . ($dataitem['bild'] ? "<img src='" . $dataitem['bild'] . "' alt='image' />" : 'empty')."</td>";
+					break;
+					default:
+						$return .= "<td>" . $dataitem[$col['name']] . "</td>";
+					break;
+				}
+			}
+			$return .= '</tr>';			
+			if (has_children($thetable, $dataitem['id'])) {
+				$levelnew = $level + 1;
+				$return .= mr_listrow($data, $constr, $dataitem['id'], $thetable, $levelnew);
+			} else {
+				$level = 0;
+			}
+		}
+	}
+	return $return;
+}
 
 
 ?>

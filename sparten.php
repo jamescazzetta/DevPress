@@ -1,30 +1,11 @@
 <?php 
 include('devpress/header.php'); 
-
-?>
-
-<?php include('nav.php'); ?>
-<section class="dp-title">
-  <hgroup>
-	<h2>Sparten<a href="sparten.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>
-  </hgroup>
-</section>
-
-
-<?php
-
-$thetable = 'gruppen';
-$joins = array('mitarbeiter');
-
-//delete
-if (array_key_exists('delete', $_GET)) {
-	mr_deleteentry($thetable, $_GET['delete']);
-	mr_deletetweenentries($thetable, 'mitarbeiter', $_GET['delete']);
-}
-
+include('nav.php');
 
 function saveit($newid = '', $thetable){
 	mr_savetextfielddata($thetable, 'sparte', $newid);
+	mr_saveparentselect($thetable, $newid);
+	
 }
 
 function editit($data, $thetable){
@@ -78,6 +59,24 @@ function uploadit($data, $table){
 	echo "</tr>";
 	echo "</table>";
 */
+}
+
+?>
+<section class="dp-title">
+  <hgroup>
+	<h2>Sparten<a href="sparten.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>
+  </hgroup>
+</section>
+
+<?php
+
+$thetable = 'gruppen';
+$joins = array('mitarbeiter');
+
+//delete
+if (array_key_exists('delete', $_GET)) {
+	mr_deleteentry($thetable, $_GET['delete']);
+	mr_deletetweenentries($thetable, 'mitarbeiter', $_GET['delete']);
 }
 
 
@@ -144,7 +143,7 @@ $constr = array(
 	
 );
 echo '<section class="dp-list">';
-mr_BuildListTable($data, $constr);
+mr_BuildListTable($data, $constr, $thetable);
 echo '</section>';
 
 
