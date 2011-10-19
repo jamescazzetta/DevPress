@@ -3,144 +3,170 @@
 // = Mitarbeiter =
 // ===============
 $args = array(
-	'name' => 'mitarbeiter',
+	'name' => 'antennen',
 	'hyrarchical' => FALSE,
 );
 set_table($args);
 
 $args = array(
-	'table' => 'mitarbeiter',
+	'table' => 'antennen',
 	'relation' => 'self',
-	'self_name' => 'vorname',
+	'self_name' => 'Artikelnummer',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
 $args = array(
-	'table' => 'mitarbeiter',
+	'table' => 'antennen',
 	'relation' => 'self',
-	'self_name' => 'nachname',
+	'self_name' => 'artikeltext',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
 $args = array(
-	'table' => 'mitarbeiter',
-	'relation' => 'self',
-	'self_name' => 'funktion',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
-
-$args = array(
-	'table' => 'mitarbeiter',
-	'relation' => 'self',
-	'self_name' => 'email',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
-
-$args = array(
-	'table' => 'mitarbeiter',
-	'relation' => 'self',
-	'self_name' => 'telefon',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
-
-$args = array(
-	'table' => 'mitarbeiter',
-	'relation' => 'self',
-	'self_name' => 'telefax',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
-
-$args = array(
-	'table' => 'mitarbeiter',
+	'table' => 'antennen',
 	'relation' => 'self',
 	'self_name' => 'bild',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
-// Gruppen
 $args = array(
-	'table' => 'mitarbeiter',
+	'table' => 'antennen',
+	'relation' => 'self',
+	'self_name' => 'durchmesser',
+	'self_definition' => 'varchar(255)'
+);
+add_table_data($args);
+
+$args = array(
+	'table' => 'antennen',
+	'relation' => 'self',
+	'self_name' => 'gewicht',
+	'self_definition' => 'varchar(255)'
+);
+add_table_data($args);
+
+$args = array(
+	'table' => 'antennen',
+	'relation' => 'self',
+	'self_name' => 'indooroutdoor',
+	'self_definition' => 'int(2)'
+);
+add_table_data($args);
+
+$args = array(
+	'table' => 'antennen',
+	'relation' => 'self',
+	'self_name' => 'preis',
+	'self_definition' => 'varchar(255)'
+);
+add_table_data($args);
+
+// bauformen
+$args = array(
+	'table' => 'antennen',
 	'relation' => 'm2m',
-	'target' => 'gruppen'
+	'target' => 'antennen_bauformen'
+);
+add_table_data($args);
+
+// art
+$args = array(
+	'table' => 'antennen',
+	'relation' => 'm2s', //the item has only one art
+	'target' => 'antennen_arte'
+);
+add_table_data($args);
+
+// Farben
+$args = array(
+	'table' => 'antennen',
+	'relation' => 's2m', //the item has many colors
+	'target' => 'farben'
 );
 add_table_data($args);
 
 
+// materialien
+$args = array(
+	'table' => 'antennen',
+	'relation' => 'm2m',
+	'target' => 'antennen_materialien'
+);
+add_table_data($args);
 
 // ===========
-// = Gruppen =
+// = Bauformen =
 // ===========
 $args = array(
-	'name' => 'gruppen',
-	'hyrarchical' => TRUE,
+	'name' => 'antennen_bauformen',
+	'hyrarchical' => FALSE,
 );
 set_table($args);
 
 $args = array(
-	'table' => 'gruppen',
+	'table' => 'antennen_bauformen',
 	'relation' => 'self',
-	'self_name' => 'sparte',
+	'self_name' => 'bauform_name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
-
-
-// ===========
-// = Partner =
-// ===========
+// =======
+// = art =
+// =======
 $args = array(
-	'name' => 'partner',
-	'hyrarchical' => TRUE, //adds parent_id
+	'name' => 'antennen_arte',
+	'hyrarchical' => FALSE,
 );
 set_table($args);
 
 $args = array(
-	'table' => 'partner',
+	'table' => 'antennen_arte',
 	'relation' => 'self',
-	'self_name' => 'name',
+	'self_name' => 'antennenart_name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
+// ==========
+// = Farben =
+// ==========
 $args = array(
-	'table' => 'partner',
+	'name' => 'farben',
+	'hyrarchical' => FALSE,
+);
+set_table($args);
+
+$args = array(
+	'table' => 'farben',
 	'relation' => 'self',
-	'self_name' => 'land',
+	'self_name' => 'farben_name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
+// ===============
+// = Materialien =
+// ===============
 $args = array(
-	'table' => 'partner',
+	'name' => 'antennen_materialien',
+	'hyrarchical' => FALSE,
+);
+set_table($args);
+
+$args = array(
+	'table' => 'antennen_materialien',
 	'relation' => 'self',
-	'self_name' => 'telefon',
+	'self_name' => 'materialienl_name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
-$args = array(
-	'table' => 'partner',
-	'relation' => 'self',
-	'self_name' => 'telefax',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
 
-$args = array(
-	'table' => 'partner',
-	'relation' => 'self',
-	'self_name' => 'email',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
+
 
 
 ?>
