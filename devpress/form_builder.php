@@ -70,25 +70,84 @@ function mr_deletetweenentries($table1, $table2, $id){
 }
 
 
-//field
-function mr_textfield($data = '', $table, $field, $label, $customattr = ''){
+//textfield (self)
+function mr_textfield($data = '', $table, $col, $label, $customattr = ''){
 	
-	$name = $field;
-	if ($data) {
-		$value = ($data[$field] ? $data[$field] : '');
-		$id = $data['id'];
-	} else {
-		$value = '';
+	// data has been submited		
+	if ($_POST) {
+		$id = ($_GET['edit_id'] == 0 ? mr_createentry($table) : $data['id']);
+		$postname = "field_{$col}_{$id}";
+		if (array_key_exists($postname,$_POST)) {
+			mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+		}
+		$data = data(array('table' => $table), array('ID' => $id), 1);
+		$value = $data[$col];
+	
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
 		$id = 'new';
+		$postname = "field_{$col}_{$id}";
+		$value = '';
+
+	// no data has been submited (just edit opened)
+	} else {
+		$id = $data['id'];
+		$postname = "field_{$col}_{$id}";
+		$value = $data[$col];
 	}
 	
-	
-	$return = "<label for='field_{$name}_{$id}'>$label</label>";
-	$return .= "<input id='field_{$name}_{$id}' type='text' name='$name' value='$value' $customattr>";
+	$return = "<label for='$postname'>$label</label>";
+	$return .= "<input id='$postname' type='text' name='$postname' value='$value' $customattr>";
 	
 	return $return;
 }
-function mr_savetextfielddata($table, $name, $newid = ''){
+function mr_savetextfielddata($table, $col, $value, $id){
+	$where = " AND id = $id";
+		
+		//row exists already? then update values
+		$sql ="UPDATE {$GLOBALS['tableprefix']}_{$table}
+		SET $col = '$value'
+		WHERE 0=0 $where";
+		mysql_query($sql);
+		
+		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$value</strong></p>", 3, "devpress/infos.log");
+}
+
+
+//colorfield (self)
+function mr_colorfield($data = '', $table, $col, $label, $customattr = ''){
+	
+	// data has been submited		
+	if ($_POST) {
+		$id = ($_GET['edit_id'] == 0 ? mr_createentry($table) : $data['id']);
+		$postname = "field_{$col}_{$id}";
+		if (array_key_exists($postname,$_POST)) {
+			mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+		}
+		$data = data(array('table' => $table), array('ID' => $id), 1);
+		$value = $data[$col];
+	
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
+		$id = 'new';
+		$postname = "field_{$col}_{$id}";
+		$value = $data[$col];
+		
+	// no data has been submited (just edit opened)
+	} else {
+		$id = $data['id'];
+		$postname = "field_{$col}_{$id}";
+		$value = $data[$col];
+	}
+	
+	$return = "<label for='$postname'>$label</label>";
+	$return .= "<input id='$postname' type='text' name='$postname' value='$value' class='colorpickerinput'>";
+	
+	return $return;
+}
+
+
+function mr_savecolorfield($table, $name, $newid = ''){
 	$value = $name;
 	$id = ($newid ? $newid : $_POST['id']);
 	$where = " AND id = $id";
@@ -104,8 +163,7 @@ function mr_savetextfielddata($table, $name, $newid = ''){
 }
 
 
-
-//textarea
+//textarea (self)
 function mr_textarea($data = '', $table, $field, $label, $customattr = '', $rows = 5, $cols = 20){
 	
 	$name = $field;
@@ -123,7 +181,7 @@ function mr_textarea($data = '', $table, $field, $label, $customattr = '', $rows
 	
 	return $return;
 }
-function mr_savetextareadata($table, $name){
+function mr_savetextareadata($table, $name, $newid = ''){
 	$value = $name;
 	$id = ($newid ? $newid : $_POST['id']);
 	$where = " AND id = $id";
@@ -141,7 +199,7 @@ function mr_savetextareadata($table, $name){
 }
 
 
-//checkboxes
+//checkboxes (m2m) (possibly s2m)
 function mr_checkboxes($args, $data){
 	
 	if (! array_key_exists('parent_id', $args)) { $args['parent_id'] = 'root';}
@@ -227,7 +285,7 @@ function mr_savecheckboxes($sourcetable, $savetable, $newid){
 
 
 
-//parentselect
+//parentselect (self)
 function mr_parentselect($args, $data){
 	
 	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
@@ -359,8 +417,149 @@ function mr_BuildListTable($data, $constr, $thetable){
 }
 
 
+//multigroup (s2m)
+/*
+	this function will grab given coll elements from target table and displays them using mr_textfield, mr_textarea, mr_colorfield functions
+	Because this is used on s2m relations, data can be entered mutliple times!
+	
+	$args = array(
+		'thetable' => 'antennen',
+		'label_sing' => 'Farbe',
+		'label_plur' => 'Farben',
+		'target_table' => 'farben',
+		'target_cols' => array(
+			'farben_name' => 'colorfield',
+			'name' => 'textfield'
+		),
+		'target_cols_labels' => array(
+			'farben_name' => 'Farbe (#Hex)',
+			'name' => 'Farben-Namen'
+		),
+	);
+*/
+function multigroup($args, $data){
+
+	
+
+	$targettable = $GLOBALS['tableprefix'] . '_' . $args['target_table'];
+	$thetable = $GLOBALS['tableprefix'] . '_' . $args['thetable'];
+	$return = '';
+	
+	//when plus or minus button has been pressed add/remove connection
+	if (array_key_exists($args['target_table'], $_POST)) {
+		switch ($_POST[$args['target_table']]) {
+			case '+':
+				$into = '';
+				foreach ($args['target_cols'] as $key => $value) {
+					$into .= $key.',';
+				}
+				$values = str_repeat(" NULL, ", count($args['target_cols']));
+
+				$sql = "INSERT INTO $targettable ($into {$thetable}_id)
+						VALUES ($values $data[id])";
+				$result = mysql_query($sql) or trigger_error("SQL", E_USER_ERROR);
+
+				//redoo data
+				$data = data(array('table' => $args['thetable'], 'joins' => array($args['target_table'])), array('ID' => $data['id']));
+			break;
+			
+			case '-':
+				$sql = "DELETE FROM $targettable WHERE id = $_POST[multigroup_remove] ";				
+				$result = mysql_query($sql) or trigger_error("SQL", E_USER_ERROR);
+				
+				//redoo data
+				$data = data(array('table' => $args['thetable'], 'joins' => array($args['target_table'])), array('ID' => $data['id']));
+			break;
+		}
+	
+	}
+	
+	
+	//preview existing fields
+	
+	if (array_key_exists($targettable, $data)) {
+		foreach ($data[$targettable] as $multigroup_array) {
+			$return .= '<div class="multigroup_item">';
+			foreach ($args['target_cols'] as $colname => $inputtype) {
+				switch ($inputtype) {
+					case 'colorfield':
+						$label = (array_key_exists($colname, $args['target_cols_labels']) ? $args['target_cols_labels'][$colname] : $colname);
+						$targetdata = data(array('table'=>$args['target_table']),array('ID'=> $multigroup_array['id']), 1);
+						$return .= mr_colorfield($targetdata, $args['target_table'], $colname, $label);
+					break;
+					
+					case 'textfield':
+						$label = (array_key_exists($colname, $args['target_cols_labels']) ? $args['target_cols_labels'][$colname] : $colname);
+						$targetdata = data(array('table'=>$args['target_table']),array('ID'=> $multigroup_array['id']), 1);
+						$return .= mr_textfield($targetdata, $args['target_table'], $colname, $label);
+					break;
+
+					default:
+						$return .= 'Undefined inputtype: '. $inputtype;
+					break;
+				}
+			}
+			$return .= '<input type="hidden" name="multigroup_remove" value="'.$targetdata['id'].'" />';
+			$return .=  "<input type='submit' name='".$args['target_table']."' value='-' class='plus'> Entfernen";	
+
+			$return .= '</div>';
+			
+		}
+	}
+	if ($_GET['action'] == 'new') {
+		$return .= "Wird nach dem Speichern aktiviert";
+	} else {
+		$return .=  "<input type='submit' name='".$args['target_table']."' value='+' class='plus'> Hinzufügen";	
+	}
+	return $return;
+}
 
 
+//select (m2s)
+/*
+	A simple singular connection to a table 
+
+	$args = array(
+		'thetable' => 'materialien',
+		'target_table' => 'farben',
+		'target_col' => 'material_name',
+		'target_col_label' => 'Material'
+		);
+*/
+
+function mr_select($args, $data){
+
+	//save
+	
+	//show
+	$return = "<select name='$args[target_table]'>";
+	$selected_col = $GLOBALS['tableprefix'].'_'.$args['target_table'].'_id';
+	$selected_id = $data[$selected_col];
+	$target_data = data(array('table' => $args['target_table']));
+	foreach ($target_data as $t_d) {
+		$colvalue = $args['target_col'];
+		$selected = ($t_d['id'] == $selected_id ? ' SELECTED ' : '');
+		$return .= "<option $selected value='$t_d[id]'>$t_d[$colvalue]</option>";
+	}
+	$return .= "</select>";
+	
+	return $return;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//arvhivelist
 function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 	$return  = '';
 	foreach ($data as $key => $dataitem) {

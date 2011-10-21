@@ -102,7 +102,7 @@ add_table_data($args);
 // ===========
 $args = array(
 	'name' => 'antennen_bauformen',
-	'hyrarchical' => FALSE,
+	'hyrarchical' => TRUE,
 );
 set_table($args);
 
@@ -143,6 +143,14 @@ set_table($args);
 $args = array(
 	'table' => 'farben',
 	'relation' => 'self',
+	'self_name' => 'farben_hex',
+	'self_definition' => 'varchar(255)'
+);
+add_table_data($args);
+
+$args = array(
+	'table' => 'farben',
+	'relation' => 'self',
 	'self_name' => 'farben_name',
 	'self_definition' => 'varchar(255)'
 );
@@ -160,7 +168,7 @@ set_table($args);
 $args = array(
 	'table' => 'antennen_materialien',
 	'relation' => 'self',
-	'self_name' => 'materialienl_name',
+	'self_name' => 'materialien_name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);

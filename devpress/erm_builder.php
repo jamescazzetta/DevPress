@@ -171,6 +171,29 @@ function add_table_data($args){
 		}
 	break;
 	
+	case 'm2s':
+		//does target table exist?
+		$sql = "SELECT * FROM $target ";
+		$exists = mysql_query($sql);
+		if (!$exists){
+			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to add the connection id to a s2m table, but Table \'{<strong>$target</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
+			return;
+		} 
+		//check if the table_id is already in the table
+		$fields = mysql_fetch_fields($target);
+		if (! array_key_exists($tablename . '_id', $fields)) {
+			//add table_id
+			$args2 = array(
+				'table' => $args['table'],
+				'relation' => 'self',
+				'self_name' => $target . '_id',
+				'self_definition' => 'int(11)'
+			);
+			add_table_data($args2);
+			
+		}
+	break;
+	
 	case 'm2m':
 		//does target table exist?
 		$sql = "SELECT * FROM $target ";

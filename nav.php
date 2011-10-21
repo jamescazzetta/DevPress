@@ -5,7 +5,7 @@
 		<ul>
 			<li><a href="antennen.php">Bearbeiten</a></li>
 			<li><a href="antennen_bauformen.php">Bauformen</a></li>
-			<li><a href="antennen_arten.php">Arten</a></li>
+			<li><a href="antennen_arte.php">Arten</a></li>
 			<li><a href="antennen_materialien.php">Materialien</a></li>
 		</ul>
 	</nav>

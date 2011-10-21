@@ -56,25 +56,25 @@ function data($args, $filters = array(), $single = ''){
 		//get join data 
 		if($joins) : 
 			foreach ($joins as $key => $join) {	
-				$join = $GLOBALS['tableprefix'] . '_' . $join;
+				$joinname = $GLOBALS['tableprefix'] . '_' . $join;
 				//get targetfields
-				$targetfields = mysql_fetch_fields($join); //retrieve targetfields			
-		
-				//test if it is s2m
-				if (array_key_exists($join . '_id', $tablefields)) {
+				$targetfields = mysql_fetch_fields($joinname); //retrieve targetfields			
+
+				//test if it is m2s
+				if (array_key_exists($joinname . '_id', $tablefields)) {
 			
 					// loop through the table item and retrieve connection id
-					$sql2 = " SELECT {$join}_id as 'join_id' FROM $tablename WHERE $tablename.id = $table_data[id] ORDER BY $join.roworder DESC";
+					$sql2 = " SELECT {$joinname}_id as 'join_id' FROM $tablename WHERE {$joinname}_id = $table_data[id] /*ORDER BY $joinname.roworder DESC*/";
 					$result = mysql_query($sql2) or trigger_error("SQL", E_USER_ERROR);
 			 		while ($temp_sql = mysql_fetch_array($result)) { 
 						if ($temp_sql['join_id']) { //check if this row even has a connection
 					
 							// retrieve all the fields for select so that no repetitions from other tables occure
 							$targetfield_names = array();
-							foreach ($targetfields as $targetfield) {$targetfield_names[] = $join . '.' . $targetfield->name;}
+							foreach ($targetfields as $targetfield) {$targetfield_names[] = $joinname . '.' . $targetfield->name;}
 							$selects = implode(", ", $targetfield_names);
 			
-							$sql_sub = " SELECT $selects FROM $join JOIN $tablename ON $tablename.{$join}_id = $join.{$join}_id WHERE $join.{$join}_id = $temp_sql[join_id] ORDER BY $join.roworder DESC";
+							$sql_sub = " SELECT $selects FROM $joinname JOIN $tablename ON $tablename.{$joinname}_id = $joinname.{$joinname}_id WHERE $joinname.{$joinname}_id = $temp_sql[join_id] ORDER BY $joinname.roworder DESC";
 							$result = mysql_query($sql_sub) or trigger_error("SQL", E_USER_ERROR);
 							$i = 0;
 							
@@ -83,9 +83,9 @@ function data($args, $filters = array(), $single = ''){
 									
 									
 									if ($single) {
-										$data[$join][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
+										$data[$joinname][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
 									} else {
-										$data[$table_data['id']][$join][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
+										$data[$table_data['id']][$joinname][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
 									}
 								}
 								$i++;
@@ -95,7 +95,16 @@ function data($args, $filters = array(), $single = ''){
 			
 						}
 					}
-	
+				
+				//test if is s2m
+				} elseif (array_key_exists($tablename . '_id', $targetfields)) {
+						// loop through the join item and retrieve connection id
+						$sql2 = " SELECT {$tablename}_id as 'table_id', ID FROM $joinname WHERE {$tablename}_id = $table_data[id] ORDER BY roworder DESC";
+						$result = mysql_query($sql2) or trigger_error("SQL", E_USER_ERROR);
+				 		while ($connection = mysql_fetch_array($result)) { 
+							$joindata = data(array('table' => $join), array('ID' => $connection['ID']), 1);
+						$data[$joinname][] = $joindata;
+						}
 				} else {
 					//M2M
 					//check the tween table to see with which table it is connected (its possible that it is connected with one of the joins!!!)
@@ -103,18 +112,18 @@ function data($args, $filters = array(), $single = ''){
 					
 					// retrieve all the fields for select so that no repetitions from other tables occure
 					$targetfield_names = array();
-					foreach ($targetfields as $targetfield) {$targetfield_names[] = $join . '.' . $targetfield->name;}
+					foreach ($targetfields as $targetfield) {$targetfield_names[] = $joinname . '.' . $targetfield->name;}
 					$selects = implode(", ", $targetfield_names);
 	
 					//sort alphabeticaly to prevent bla2bla confusions
-					$tables = array($tablename,$join);
+					$tables = array($tablename,$joinname);
 					sort($tables);  
 	
-					$sql_sub = "SELECT $selects FROM $join 
-								JOIN $tables[0]2$tables[1] ON $tables[0]2$tables[1].{$join}_id = $join.id 
+					$sql_sub = "SELECT $selects FROM $joinname 
+								JOIN $tables[0]2$tables[1] ON $tables[0]2$tables[1].{$joinname}_id = $joinname.id 
 								JOIN $tablename ON $tables[0]2$tables[1].{$tablename}_id = $tablename.id
 								WHERE $tablename.id = $table_data[id] 
-								ORDER BY $join.roworder DESC
+								ORDER BY $joinname.roworder DESC
 								";
 					$result = mysql_query($sql_sub) or trigger_error("SQL", E_USER_ERROR);
 					$i = 0;
@@ -123,9 +132,9 @@ function data($args, $filters = array(), $single = ''){
 						
 						foreach ($targetfields as $key => $targetfield) {
 							if ($single) {
-								$data[$join][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
+								$data[$joinname][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
 							} else {
-								$data[$table_data['id']][$join][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
+								$data[$table_data['id']][$joinname][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
 							}
 						}
 						$i++;

@@ -3,9 +3,8 @@ include('devpress/header.php');
 include('nav.php');
 
 function saveit($newid = '', $thetable){
-	mr_savetextfielddata($thetable, 'sparte', $newid);
-	mr_saveparentselect($thetable, $newid);
-	
+	mr_savecheckboxes($thetable, 'antennen', $newid);
+		
 }
 
 function editit($data, $thetable){
@@ -14,29 +13,22 @@ function editit($data, $thetable){
 	
 		echo "<div class='db-edit-col'>";
 			echo '<h4 class="db-edit-title">Bearbeiten</h4>';
-			echo mr_textfield($data, $thetable, 'sparte', 'Sparte', ' autofocus="autofocus" ');
+			echo mr_textfield($data, $thetable, 'antennenart_name', 'art', ' autofocus="autofocus" ');
 		echo "</div>";
 	
 		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Mitarbeiter</h4>';
+			echo '<h4 class="db-edit-title">Antennen</h4>';
 			$args = array(
-				"table" => "mitarbeiter",
-				"label" => "Verknüpfte Mitarbeiter",
-				"colvalues" => array("vorname", "nachname"),
+				"table" => "antennen",
+				"label" => "Verknüpfte Antennen",
+				"colvalues" => array("Artikelnummer"),
 				"valueseperation" => " "
 			);
-			echo mr_checkboxes($args, $data);;
+			//echo mr_checkboxes($args, $data);;
 		echo "</div>";
 		
 		echo "<div class='db-edit-col db-edit-submit'>";
 			echo '<h4 class="db-edit-title">Aktionen</h4>';
-			$args = array(
-				"table" => $thetable,
-				"label" => "Übergeordnet",
-				"colvalues" => array("sparte"),
-				"valueseperation" => " "
-			);
-			echo mr_parentselect($args, $data);
 			echo mr_submitbutton($value = 'Apply');
 		echo "</div>";
 		
@@ -64,19 +56,19 @@ function uploadit($data, $table){
 ?>
 <section class="dp-title">
   <hgroup>
-	<h2>Sparten<a href="sparten.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>
+	<h2>Arten<a href="antennen_arte.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>
   </hgroup>
 </section>
 
 <?php
 
-$thetable = 'gruppen';
-$joins = array('mitarbeiter');
+$thetable = 'antennen_arte';
+$joins = array('antennen');
 
 //delete
 if (array_key_exists('delete', $_GET)) {
 	mr_deleteentry($thetable, $_GET['delete']);
-	mr_deletetweenentries($thetable, 'mitarbeiter', $_GET['delete']);
+	mr_deletetweenentries($thetable, 'antennen_arte', $_GET['delete']);
 }
 
 
@@ -131,15 +123,10 @@ echo "</section>";
 $data = data(array('table' => $thetable, 'joins' => $joins));
 $constr = array(
 	1 => array(
-			'name' => 'sparte',
-			'title' => 'Sparte',
+			'name' => 'antennenart_name',
+			'title' => 'arten',
 			'type' => 'title'
-		),
-	2 => array(
-			'name' => 'parent_id',
-			'title' => 'Parent ID',
-			'type' => 'normal'
-		),
+		)
 	
 );
 echo '<section class="dp-list">';
