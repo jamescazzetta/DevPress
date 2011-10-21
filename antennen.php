@@ -1,15 +1,13 @@
 <?php 
 include('devpress/header.php'); 
 include('nav.php'); 
-$thetable = 'antennen';
-$joins = array('antennen_bauformen', 'farben', 'antennen_materialien', 'antennen_arte');
 
-
-function saveit($newid = '', $thetable){
-	mr_savetextareadata($thetable, 'artikeltext', $newid);
-	//mr_truefalse($thetable, 'indooroutdoor', $newid);
-	mr_savecheckboxes($thetable, 'antennen_bauformen', $newid);
-}
+//Title
+echo '<section class="dp-title">';
+  echo '<hgroup>';
+	echo '<h2>Antennen<a href="antennen.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>';
+  echo '</hgroup>';
+echo '</section>';
 
 
 function editit($data, $thetable){
@@ -30,6 +28,7 @@ function editit($data, $thetable){
 			echo '<h4 class="db-edit-title">Bauformen zuteilung(m2m)</h4>';
 			$args = array(
 				"table" => "antennen_bauformen",
+				"original_table" => $thetable,
 				"label" => "Bauformen",
 				"colvalues" => array("bauform_name"),
 				"valueseperation" => " "
@@ -52,6 +51,7 @@ function editit($data, $thetable){
 			echo '<h4 class="db-edit-title">Materialien(m2m)</h4>';
 			$args = array(
 				"table" => "antennen_materialien",
+				"original_table" => $thetable,
 				"label" => "Materialien",
 				"colvalues" => array("materialien_name"),
 				"valueseperation" => " "
@@ -79,90 +79,24 @@ function editit($data, $thetable){
 			
 		echo "</div>";
 	
-		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Aktionen</h4>';
-			echo mr_submitbutton($value = 'Übernehmen');
-			echo mr_cancelbutton($value = 'Abbrechen');
-			if ($data) {echo mr_deletebutton($data['id'], $value = 'Löschen');}
-			
-			
-		echo "</div>";
-	
-	echo mr_endform();
+	//$args = array('aktiontitle' => 'Aktionen', 'submit' => 'Übernehmen', 'cancel' => 'Abbrechen', 'delete' => 'Löschen');
+	echo mr_endform($data);
 	echo "<div class='clear'>&nbsp;</div>";
 	echo "</section>";
 }
 
 
-function uploadit($data, $table){
-	echo "<section id='db-edit'>";	
-		echo "<div class='db-edit-col db-edit-col-2'>";
-			echo '<h4 class="db-edit-title">Bild hochladen</h4>';
-			ImgUpload($table, 'bild', 'Mitarbeiter Bilder', $data, array(70,70));
-		echo "</div>";
-		echo "<div class='clear'>&nbsp;</div>";
-	echo "</section>";
-}
-
-
-
-
-echo '<section class="dp-title">';
-  echo '<hgroup>';
-	echo '<h2>Antennen<a href="antennen.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>';
-  echo '</hgroup>';
-echo '</section>';
-
-//delete
-if (array_key_exists('delete', $_GET)) {
-	mr_deleteentry($thetable, $_GET['delete']);
-	mr_deletetweenentries($thetable, 'antennen_bauformen', $_GET['delete']);
-}
-
-//get data if id is given 
-if ( array_key_exists('edit_id', $_GET)) {
-		$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-} else {
-	$data = array();
-}
-
-
-
-
+//edit
 echo "<section class='db-edit'>";
-if ( array_key_exists('action', $_GET)) {
-	switch ($_GET['action']) {
-		case 'saveedit':
-			saveit('',$thetable);
-			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-			editit($data, $thetable);
-		break;
-		case 'savenew':
-			$newid = mr_createentry($thetable);
-			saveit($newid, $thetable);
-			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $newid), 1);
-			editit($data, $thetable);
-			
-		break;
-		case 'edit':
-			editit($data, $thetable);
-		break;
-		case 'new':
-			editit($data, $thetable);
-		break;
-		case 'uploadimage':
-		$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-			uploadit($data, $thetable);
-		break;
-	}
-} else {
-	//echo "<p>Diese Einträge werden nach <a href='sparten.php' >Sparten</a> geordnet und werden auf der <a href='http://algra.pcardsolution.ch/v3/mitarbeiter.php'>Ansprechspartner</a> Seite angezeigt.</p>";
-}
+	$thetable = 'antennen';
+	$joins = array('antennen_bauformen', 'farben', 'antennen_materialien', 'antennen_arte');
+	form_logic($thetable, $joins);
 echo "</section>";
 
 
 //list
-$data = data(array('table' => $thetable, 'joins' => array('antennen_bauformen')));
+echo '<section class="dp-list">';
+$data = data(array('table' => $thetable, $joins));
 $constr = array(
 	2 => array(
 			'name' => 'Artikelnummer',
@@ -202,7 +136,6 @@ $constr = array(
 		)
 	
 );
-echo '<section class="dp-list">';
 mr_BuildListTable($data, $constr, $thetable);
 echo '</section>';
 

@@ -34,22 +34,7 @@ include('erm.php');
 	<script src="js/colorpicker/js/colorpicker.js"></script>
 	<script charset="utf-8">
 		$(function() {
-			/*
-			$('.colorSelector').ColorPicker({
-				onShow: function (colpkr) {
-					$(colpkr).fadeIn(500);
-					return false;
-				},
-				onHide: function (colpkr) {
-					$(colpkr).fadeOut(500);
-					return false;
-				},
-				onChange: function (hsb, hex, rgb, colpkr) {
-					$(colpkr).find('div').css('backgroundColor', '#' + hex);
-					$(colpkr).prev().val(hex);
-				}
-			});
-			*/
+
 			$('.colorpickerinput').ColorPicker({
 				onSubmit: function(hsb, hex, rgb, el) {
 					$(el).val(hex);
@@ -69,17 +54,19 @@ include('erm.php');
 			});
 			
 			//$('.colorpickerinput').after('<div class="collorbox" style="height:20px;width:20px">&nbsp</div>');
-			
-			/*
-			$(".colorpickerinput").keyup(function () {
-			      var value = $(this).val();
-			      $(this).next('.collorbox').css('background-color','#' + value)
-			    }).keyup();
-			*/
+
 		});
 	</script>
 
 
+	<!-- input toggle-->
+	<link rel="stylesheet" href="js/iphone-style-checkboxes.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<script src="js/iphone-style-checkboxes.js" type="text/javascript"></script>
+
+	
+	
+	
+	
 	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 	<meta name="generator" content="WebMotionUK" />
 	

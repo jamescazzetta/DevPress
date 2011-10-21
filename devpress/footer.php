@@ -6,6 +6,13 @@
 		echo '</textarea>';
 	?>
 	</div>
+	<div class="debug">
+	<?php
+		echo '<h1>$data</h1><textarea cols="50" rows="40">';
+		print_r($data);
+		echo '</textarea>';
+	?>
+	</div>
 </div>
 </div>
 </div>

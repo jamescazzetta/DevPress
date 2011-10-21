@@ -5,7 +5,6 @@
 
 function mr_startform($data, $table){
 	
-	$action = $_GET['action'];
 	
 	if ($data) {
 		$id = $data['id'];
@@ -13,16 +12,32 @@ function mr_startform($data, $table){
 		$id = 0;
 	}
 
-	if (startsWith('save', $action)) {
-		$action = str_replace("save", "", $action);
-	}
 	
-	return '<form  method="post" action="?action=save' . $action . '&edit_id=' . $id .'"><input type="hidden" name="id" value="' . $id . '"> ';
+	return '<form  method="post" action="?action=save&edit_id=' . $id .'"><input type="hidden" name="id" value="' . $id . '"> ';
 }
 
 
-function mr_endform(){
-	return '</form>';
+function mr_endform($data, $args = array(
+		'aktiontitle' => 'Actions', 
+		'submit' => 'Save', 
+		'cancel' => 'Cancel', 
+		'delete' => 'Delete',
+		'publish' => 'Publish'
+		)
+){
+	$return = '';
+	$return .= "<div class='db-edit-col'>";
+		$return .= '<h4 class="db-edit-title">'.$args['aktiontitle'].'</h4>';
+		$return .= mr_tf_published($args['publish']);
+		
+		$return .= mr_submitbutton($args['submit']);
+		$return .= mr_cancelbutton($args['cancel']);
+		if ($data) {$return .= mr_deletebutton($data['id'], $args['delete']);}	
+	$return .= "</div>";
+	
+	$return .= '</form>';
+	
+	return $return;
 }
 
 
@@ -39,11 +54,27 @@ function mr_deletebutton($id, $value){
 	return "<a href='?delete='.$id.'' class='linktobutton'>$value</a>";
 }
 
+function mr_tf_published($value, $trueval = "public", $falseval = "hidden"){
+	return '
+	<script type="text/javascript" charset="utf-8">
+		$(window).load(function() {
+	      $(\'.on_off :checkbox\').iphoneStyle({ checkedLabel: \''.$trueval.'\', uncheckedLabel: \''.$falseval.'\',resizeHandle: true }); 
+	    });
+	</script>
+	<table>
+		<tr class="on_off">
+	      <td>
+	        <input type="checkbox" id="on_off" />
+	      </td>
+	    </tr>
+	</table>
+	';
+}
 function mr_createentry($table){
 		$sql = "INSERT INTO {$GLOBALS['tableprefix']}_{$table}(id)
 		VALUES (NULL)";
 		mysql_query($sql);
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>" . mysql_insert_id() ."</strong> for <strong>$table</strong> created</p>", 3, "devpress/infos.log");
+		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>" . mysql_insert_id() ."</strong> for <strong>$table</strong> created</p>", 3, "infos.log");
 		return mysql_insert_id();
 };
 
@@ -51,7 +82,7 @@ function mr_deleteentry($table, $id){
 	$table = $GLOBALS['tableprefix']."_".$table;
 	mysql_query("DELETE FROM $table WHERE $table.id = $id");
 	
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$table</strong> were deleted.</p>", 3, "devpress/infos.log");
+	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$table</strong> were deleted.</p>", 3, "infos.log");
 	
 }
 
@@ -65,7 +96,7 @@ function mr_deletetweenentries($table1, $table2, $id){
 	
 	mysql_query("DELETE FROM $tweentable WHERE $table1.{$table1}_id = $id");
 	
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$tweentable</strong> were deleted.</p>", 3, "devpress/infos.log");
+	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$tweentable</strong> were deleted.</p>", 3, "infos.log");
 	
 }
 
@@ -110,57 +141,15 @@ function mr_savetextfielddata($table, $col, $value, $id){
 		WHERE 0=0 $where";
 		mysql_query($sql);
 		
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$value</strong></p>", 3, "devpress/infos.log");
+		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$value</strong></p>", 3, "infos.log");
 }
 
 
 //colorfield (self)
-function mr_colorfield($data = '', $table, $col, $label, $customattr = ''){
-	
-	// data has been submited		
-	if ($_POST) {
-		$id = ($_GET['edit_id'] == 0 ? mr_createentry($table) : $data['id']);
-		$postname = "field_{$col}_{$id}";
-		if (array_key_exists($postname,$_POST)) {
-			mr_savetextfielddata($table, $col, $_POST[$postname], $id);
-		}
-		$data = data(array('table' => $table), array('ID' => $id), 1);
-		$value = $data[$col];
-	
-	// no data has been submited (just new one opened)
-	} elseif ($_GET['action'] == 'new') {
-		$id = 'new';
-		$postname = "field_{$col}_{$id}";
-		$value = $data[$col];
-		
-	// no data has been submited (just edit opened)
-	} else {
-		$id = $data['id'];
-		$postname = "field_{$col}_{$id}";
-		$value = $data[$col];
-	}
-	
-	$return = "<label for='$postname'>$label</label>";
-	$return .= "<input id='$postname' type='text' name='$postname' value='$value' class='colorpickerinput'>";
-	
-	return $return;
+function mr_colorfield($data = '', $table, $col, $label){	
+	return mr_textfield($data, $table, $col, $label, ' class="colorpickerinput" ');
 }
 
-
-function mr_savecolorfield($table, $name, $newid = ''){
-	$value = $name;
-	$id = ($newid ? $newid : $_POST['id']);
-	$where = " AND id = $id";
-		
-		//row exists already? then update values
-		$sql ="UPDATE {$GLOBALS['tableprefix']}_{$table}
-		SET $name = '$_POST[$name]'
-		WHERE 0=0 $where";
-		mysql_query($sql);
-		
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$name</strong> updated to <strong>$_POST[$name]</strong></p>", 3, "devpress/infos.log");
-		
-}
 
 
 //textarea (self)
@@ -194,25 +183,61 @@ function mr_savetextareadata($table, $name, $newid = ''){
 		WHERE 0=0 $where";
 		mysql_query($sql);
 		
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$name</strong> updated to <strong>$_POST[$name]</strong></p>", 3, "devpress/infos.log");
+		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$name</strong> updated to <strong>$_POST[$name]</strong></p>", 3, "infos.log");
 		
 }
 
 
+$args = array(
+	"table" => "antennen_materialien",
+	"original_table" => "antennen",
+	"label" => "Materialien", //just for presentation
+	"colvalues" => array("materialien_name"), //just for presentation
+	"valueseperation" => " ", //just for presentation
+	"parent_id" => "" //used by the function
+);
 //checkboxes (m2m) (possibly s2m)
 function mr_checkboxes($args, $data){
 	
-	if (! array_key_exists('parent_id', $args)) { $args['parent_id'] = 'root';}
 	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
+	
+	
+	// data has been submited		
+	if ($_POST) {
+		$id = $data['id'];
+		$postname = $target_table;
+		if (array_key_exists($postname,$_POST)) {
+			mr_savecheckboxes($args['original_table'], $args['table'] , $_POST[$postname], $id);
+		}
+		$data = data(array('table' => $args["original_table"], 'joins' => array($args['table'])), array('ID' => $data['id']), 1);
+	
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
+		$id = 'new';
+		$postname = "field_{$col}_{$id}";
+		$value = '';
+
+	// no data has been submited (just edit opened)
+	} else {
+		$id = $data['id'];
+	}
+	
+	
+	
+	if (! array_key_exists('parent_id', $args)) { $args['parent_id'] = 'root';}
+	
 	$return = "";
 	
 	//put all connected ids into an array
 	$selected = array();
-	if (array_key_exists($target_table, $data)) {
+	if (array_key_exists($target_table,$data)) {
 		foreach ($data[$target_table] as $key => $value) {
 			$selected[] = $value['id'];
 		}
+	} else {
+		$selected = array();
 	}
+		
 
 
 	$connectiondata = data( array("table" => $args["table"]),  array("parent_id" => $args["parent_id"]) );
@@ -233,7 +258,7 @@ function mr_checkboxes($args, $data){
 				$inputtxt .= $value[$txt]; 
 			}
 			
-			$return .= '<input '.$checked.' type="checkbox" name="'.$args["table"].'[]" value="'.$value['id'].'" />'. $inputtxt;
+			$return .= '<input '.$checked.' type="checkbox" name="'.$target_table.'[]" value="'.$value['id'].'" />'. $inputtxt;
 			
 			//children
 			if (has_children($args['table'],$value['id'])) {
@@ -248,8 +273,15 @@ function mr_checkboxes($args, $data){
 	return $return;
 }
 
-function mr_savecheckboxes($sourcetable, $savetable, $newid){
-	
+function mr_savecheckboxes($sourcetable, $savetable, $values, $id){
+	/*
+	echo '<br />sourcetable:' . $sourcetable . "<br />";
+	echo '<br />savetable:' . $savetable . "<br />";
+	echo '<textarea cols="50" rows="40">';
+	print_r($values);
+	echo '</textarea>';
+	echo '<br />id:' . $id . "<br />";
+	*/
 	//sourcetable
 	$prefix_sourcetable =  $GLOBALS['tableprefix'] .'_'. $sourcetable;
 	
@@ -260,26 +292,20 @@ function mr_savecheckboxes($sourcetable, $savetable, $newid){
 	$tables = array($prefix_sourcetable,$prefix_savetable);
 	sort($tables);  //sort alphabeticaly to prevent bla2bla confusions
 	$tweentable = $tables[0].'2'.$tables[1];
-	
-	//id
-	$id = ($newid ? $newid : $_POST['id']);
 
 
 		
 		//delete
 		mysql_query("DELETE FROM $tweentable WHERE {$prefix_sourcetable}_id = '$id'");
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$tweentable</strong> were deleted to make room.</p>", 3, "devpress/infos.log");
+		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$tweentable</strong> were deleted to make room.</p>", 3, "infos.log");
 	
 		//insert new
-		if (array_key_exists($savetable, $_POST)) {
-			foreach ($_POST[$savetable] as $item) {
+			foreach ($values as $item) {
 				$SQL = "INSERT INTO $tweentable ({$prefix_sourcetable}_id, {$prefix_savetable}_id) VALUES ('$id', '$item')";
 				$sq = mysql_query($SQL);
 				print mysql_error();
-				error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> to table <strong>$tweentable</strong> added </p>", 3, "devpress/infos.log");
-			
+				error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> to table <strong>$tweentable</strong> added </p>", 3, "infos.log");	
 			}
-		}
 };
 
 
@@ -334,7 +360,7 @@ function mr_saveparentselect($table, $newid){
 	WHERE id = $id";
 	mysql_query($sql);
 	
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> {$GLOBALS['tableprefix']}_{$table} Parent_id with id $id changed to $_POST[parent_id]</p>", 3, "devpress/infos.log");
+	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> {$GLOBALS['tableprefix']}_{$table} Parent_id with id $id changed to $_POST[parent_id]</p>", 3, "infos.log");
 }
 
 //images
@@ -534,7 +560,8 @@ function mr_select($args, $data){
 	//show
 	$return = "<select name='$args[target_table]'>";
 	$selected_col = $GLOBALS['tableprefix'].'_'.$args['target_table'].'_id';
-	$selected_id = $data[$selected_col];
+	$selected_id = ($data ? $data[$selected_col] : '');
+	
 	$target_data = data(array('table' => $args['target_table']));
 	foreach ($target_data as $t_d) {
 		$colvalue = $args['target_col'];
@@ -548,6 +575,32 @@ function mr_select($args, $data){
 
 
 
+
+
+
+
+
+//formlogic
+function form_logic($thetable, $joins){
+	if ( array_key_exists('edit_id', $_GET)) {
+			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
+	} else {
+		$data = array();
+	}
+
+	//delete
+	if (array_key_exists('delete', $_GET)) {
+		mr_deleteentry($thetable, $_GET['delete']);
+		//mr_deletetweenentries($thetable, 'antennen_bauformen', $_GET['delete']);
+	}
+
+	//edit
+	if ( array_key_exists('action', $_GET)) {
+		editit($data, $thetable);
+	} else {
+		//echo "<p>Diese Einträge werden nach <a href='sparten.php' >Sparten</a> geordnet und werden auf der <a href='http://algra.pcardsolution.ch/v3/mitarbeiter.php'>Ansprechspartner</a> Seite angezeigt.</p>";
+	}
+}
 
 
 
