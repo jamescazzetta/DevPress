@@ -1,18 +1,15 @@
 <section class="dp-navigation">
 	<a href="#" id="settings" />Einstellungen</a>
 	<nav>
-		<h3>Antennen</h3>
+		<h3>Produkte</h3>
 		<ul>
-			<li><a href="antennen.php">Bearbeiten</a></li>
-			<li><a href="antennen_bauformen.php">Bauformen</a></li>
-			<li><a href="antennen_arte.php">Arten</a></li>
-			<li><a href="antennen_materialien.php">Materialien</a></li>
+			<li><a href="produkte.php">Bearbeiten</a></li>
 		</ul>
 	</nav>
 	<nav>
-		<h3>Kabel</h3>
+		<h3>Kategorien</h3>
 		<ul>
-			<li><a href="partner.php">Bearbeiten</a></li>
+			<li><a href="kategorien.php">Bearbeiten</a></li>
 		</ul>
 	</nav>
 	<div class="clear"></div>

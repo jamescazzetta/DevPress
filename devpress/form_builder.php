@@ -41,7 +41,7 @@ function mr_cancelbutton($value){
 }
 
 function mr_deletebutton($id, $value){
-	return "<a href='?delete='.$id.'' class='linktobutton'>$value</a>";
+	return "<a href='?delete=$id' class='linktobutton'>$value</a>";
 }
 
 function mr_tf_published($value, $trueval = "public", $falseval = "hidden"){
@@ -94,10 +94,21 @@ function mr_textfield($data = '', $table, $col, $label, $customattr = ''){
 	
 	// data has been submited
 	if ($_POST) {
-		$id = ($_GET['edit_id'] == 0 ? mr_createentry($table) : $data['id']);
-		$postname = "field_{$col}_{$id}";
-		if (array_key_exists($postname,$_POST)) {
-			mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+		//comming from new
+		if ($_GET['edit_id'] == 0) {
+			$postname = "field_{$col}_new";
+			$id = mr_createentry($table);
+			if (array_key_exists($postname,$_POST)) {
+				mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+			}
+			$postname = "field_{$col}_{$id}";
+		//comming from existing	
+		} else {
+			$id = $data['id'];	
+			$postname = "field_{$col}_{$id}";
+			if (array_key_exists($postname,$_POST)) {
+				mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+			}			
 		}
 		$data = data(array('table' => $table), array('ID' => $id), 1);
 		$value = $data[$col];
@@ -120,6 +131,51 @@ function mr_textfield($data = '', $table, $col, $label, $customattr = ''){
 	
 	return $return;
 }
+
+//textarea (self)
+function mr_textarea($data = '', $table, $col, $label, $customattr = '', $rows = 5, $cols = 20){
+	// data has been submited
+	if ($_POST) {
+		//comming from new
+		if ($_GET['edit_id'] == 0) {
+			$postname = "field_{$col}_new";
+			$id = mr_createentry($table);
+			if (array_key_exists($postname,$_POST)) {
+				mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+			}
+			$postname = "field_{$col}_{$id}";
+		//comming from existing	
+		} else {
+			$id = $data['id'];	
+			$postname = "field_{$col}_{$id}";
+			if (array_key_exists($postname,$_POST)) {
+				mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+			}			
+		}
+		$data = data(array('table' => $table), array('ID' => $id), 1);
+		$value = $data[$col];
+	
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
+		$id = 'new';
+		$postname = "field_{$col}_{$id}";
+		$value = '';
+
+	// no data has been submited (just edit opened)
+	} else {
+		$id = $data['id'];
+		$postname = "field_{$col}_{$id}";
+		$value = $data[$col];
+	}
+	
+	$return = "<label for='$postname'>$label</label>";
+	$return .= "<textarea rows='$rows' cols='$cols'  id='$postname' type='text' name='$postname' $customattr>$value</textarea>";
+	
+	return $return;
+	
+
+}
+
 function mr_savetextfielddata($table, $col, $value, $id){
 	$where = " AND id = $id";
 	
@@ -140,38 +196,7 @@ function mr_colorfield($data = '', $table, $col, $label){
 
 
 
-//textarea (self)
-function mr_textarea($data = '', $table, $field, $label, $customattr = '', $rows = 5, $cols = 20){
-	
-	$name = $field;
-	if ($data) {
-		$value = ($data[$field] ? $data[$field] : '');
-		$id = $data['id'];
-	} else {
-		$value = '';
-		$id = 'new';
-	}
-	
-	
-	$return = "<label for='field_{$name}_{$id}'>$label</label>";
-	$return .= "<textarea rows='$rows' cols='$cols' id='field_{$name}_{$id}' type='text' name='$name' $customattr>$value </textarea>";
-	
-	return $return;
-}
-function mr_savetextareadata($table, $name, $newid = ''){
-	$value = $name;
-	$id = ($newid ? $newid : $_POST['id']);
-	$where = " AND id = $id";
 
-	//row exists already? then update values
-	$sql ="UPDATE {$GLOBALS['tableprefix']}_{$table}
-	SET $name = '$_POST[$name]'
-	WHERE 0=0 $where";
-	mysql_query($sql);
-	
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$name</strong> updated to <strong>$_POST[$name]</strong></p>", 3, "infos.log");
-
-}
 
 
 $args = array(
@@ -184,24 +209,25 @@ $args = array(
 );
 //checkboxes (m2m) (possibly s2m)
 function mr_checkboxes($args, $data){
-	
+	$col = "";
 	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
+	foreach($args['colvalues'] AS $colitem) {
+		$col .= $colitem;
+	}
 	
 	// data has been submited		
 	if ($_POST) {
-		$id = $data['id'];
-		$postname = $target_table;
-		if (array_key_exists($postname,$_POST)) {
-			mr_savecheckboxes($args['original_table'], $args['table'] , $_POST[$postname], $id);
-		}
-		$data = data(array('table' => $args["original_table"], 'joins' => array($args['table'])), array('ID' => $data['id']), 1);
-	
-	// no data has been submited (just new one opened)
+			$id = ($_GET['edit_id'] == 0 ? 0 : $data['id']);
+			$postname = $target_table;
+			//if its a new item being submited than dont save
+			if (array_key_exists($postname,$_POST) && $_GET['edit_id'] != 0) {
+				mr_savecheckboxes($args['original_table'], $args['table'] , $_POST[$postname], $id);
+			}
+			$data = data(array('table' => $args["original_table"], 'joins' => array($args['table'])), array('ID' => $id), 1);
+	// no data has been submited (just new one opened) (we will ignore this function then because it has a foreign requirenment)
 	} elseif ($_GET['action'] == 'new') {
-		$id = 'new';
-		$postname = "field_{$col}_{$id}";
-		$value = '';
-
+		return "you must complete the creation stage before you can asign it to $args[label].";
+		
 	// no data has been submited (just edit opened)
 	} else {
 		$id = $data['id'];
@@ -211,16 +237,15 @@ function mr_checkboxes($args, $data){
 	
 	$return = "";
 	
-	//put all connected ids into an array
+	//put all connected ids into an array (if the item is new ignore it)
 	$selected = array();
-	if (array_key_exists($target_table,$data)) {
-		foreach ($data[$target_table] as $key => $value) {
-			$selected[] = $value['id'];
+	if ($_GET['edit_id'] != 0) {	
+		if (array_key_exists($target_table,$data)) {
+			foreach ($data[$target_table] as $key => $value) {
+				$selected[] = $value['id'];
+			}
 		}
-	} else {
-		$selected = array();
 	}
-	
 	$connectiondata = data( array("table" => $args["table"]),  array("parent_id" => $args["parent_id"]) );
 	$isroot = FALSE;
 	if ($args['parent_id'] == 'root') {
@@ -284,25 +309,37 @@ function mr_savecheckboxes($sourcetable, $savetable, $values, $id){
 //parentselect (self)
 function mr_parentselect($args, $data){
 	
-	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
-	$return = "";
-	if ($data) {
-		$current_parentid = $data['parent_id'];
-		$current_id = $data['id'];
+	// data has been submited
+	if ($_POST) {
+		$id = ($_GET['edit_id'] == 0 ? mr_createentry($args['table']) : $data['id']);
+		if (array_key_exists('parent_id',$_POST)) {
+			mr_saveparentselect($args['table'], $id);
+			$data = data(array('table' => $args['table']), array('ID' => $id), 1);
+		}
+		
+	
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
+		$id = 'new';
+		$data['parent_id'] = 'none';
+
+	// no data has been submited (just edit opened)
 	} else {
-		$current_parentid = 0;
-		$current_id = 0;
+		$id = $data['id'];
 	}
 	
-	$return .= "<label>$args[label]</label>";
+	$return = "<label>$args[label]</label>";
 	$return .= "<select name='parent_id'>";
 	$return .= "<option value='0'>None</option>";
 	
 	$optiondatas = data(array('table' => $args['table']));
 	
+	//echo $id;
+	//echo $data['parent_id'];
+	
 	foreach ($optiondatas as $optiondata) {
-		if ($current_id != $optiondata['id']) {		
-			$selected = ($current_parentid == $optiondata['id'] ?' SELECTED ':'');
+		if ($id != $optiondata['id']) {		
+			$selected = ($data['parent_id'] == $optiondata['id'] ?' SELECTED ':'');
 				
 			$return .= "<option $selected value='$optiondata[id]'>";
 			$txt = "";
@@ -318,9 +355,7 @@ function mr_parentselect($args, $data){
 	return $return;
 }
 
-function mr_saveparentselect($table, $newid){
-
-	$id = ($newid ? $newid : $_POST['id']);
+function mr_saveparentselect($table, $id){
 	
 	$sql ="UPDATE {$GLOBALS['tableprefix']}_{$table}
 	SET parent_id = '$_POST[parent_id]'
@@ -512,7 +547,7 @@ function mr_select($args, $data){
 	//save
 
 	//show
-	$return = "<select name='$args[target_table]'>";
+	$return = "<select name='$args[target_table]'><option value=''>none</option>";
 	$selected_col = $GLOBALS['tableprefix'].'_'.$args['target_table'].'_id';
 	$selected_id = ($data ? $data[$selected_col] : '');
 	

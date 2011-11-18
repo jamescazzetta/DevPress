@@ -1,15 +1,12 @@
 <?php
-// ===============
-// = Mitarbeiter =
-// ===============
 $args = array(
-	'name' => 'antennen',
+	'name' => 'produkte',
 	'hyrarchical' => FALSE,
 );
 set_table($args);
 
 $args = array(
-	'table' => 'antennen',
+	'table' => 'produkte',
 	'relation' => 'self',
 	'self_name' => 'Artikelnummer',
 	'self_definition' => 'varchar(255)'
@@ -17,15 +14,31 @@ $args = array(
 add_table_data($args);
 
 $args = array(
-	'table' => 'antennen',
+	'table' => 'produkte',
 	'relation' => 'self',
-	'self_name' => 'artikeltext',
+	'self_name' => 'name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
 $args = array(
-	'table' => 'antennen',
+	'table' => 'produkte',
+	'relation' => 'self',
+	'self_name' => 'beschreibung',
+	'self_definition' => 'varchar(255)'
+);
+add_table_data($args);
+
+$args = array(
+	'table' => 'produkte',
+	'relation' => 'self',
+	'self_name' => 'techdata',
+	'self_definition' => 'int(2)'
+);
+add_table_data($args);
+
+$args = array(
+	'table' => 'produkte',
 	'relation' => 'self',
 	'self_name' => 'bild',
 	'self_definition' => 'varchar(255)'
@@ -33,148 +46,90 @@ $args = array(
 add_table_data($args);
 
 $args = array(
-	'table' => 'antennen',
+	'table' => 'produkte',
 	'relation' => 'self',
-	'self_name' => 'durchmesser',
+	'self_name' => 'thumb',
+	'self_definition' => 'varchar(255)'
+);
+add_table_data($args);
+
+
+$args = array(
+	'table' => 'produkte',
+	'relation' => 'self',
+	'self_name' => 'preis_chf',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
 $args = array(
-	'table' => 'antennen',
+	'table' => 'produkte',
 	'relation' => 'self',
-	'self_name' => 'gewicht',
+	'self_name' => 'preis_wir',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
-$args = array(
-	'table' => 'antennen',
-	'relation' => 'self',
-	'self_name' => 'indooroutdoor',
-	'self_definition' => 'int(2)'
-);
-add_table_data($args);
 
+// Kategorie
 $args = array(
-	'table' => 'antennen',
-	'relation' => 'self',
-	'self_name' => 'preis',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
-
-// bauformen
-$args = array(
-	'table' => 'antennen',
+	'table' => 'produkte',
 	'relation' => 'm2m',
-	'target' => 'antennen_bauformen'
-);
-add_table_data($args);
-
-// art
-$args = array(
-	'table' => 'antennen',
-	'relation' => 'm2s', //the item has only one art
-	'target' => 'antennen_arte'
-);
-add_table_data($args);
-
-// Farben
-$args = array(
-	'table' => 'antennen',
-	'relation' => 's2m', //the item has many colors
-	'target' => 'farben'
+	'target' => 'kategorien'
 );
 add_table_data($args);
 
 
-// materialien
-$args = array(
-	'table' => 'antennen',
-	'relation' => 'm2m',
-	'target' => 'antennen_materialien'
-);
-add_table_data($args);
 
 // ===========
-// = Bauformen =
+// = kategorie =
 // ===========
 $args = array(
-	'name' => 'antennen_bauformen',
+	'name' => 'kategorien',
 	'hyrarchical' => TRUE,
 );
 set_table($args);
 
 $args = array(
-	'table' => 'antennen_bauformen',
+	'table' => 'kategorien',
 	'relation' => 'self',
-	'self_name' => 'bauform_name',
+	'self_name' => 'name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
 
-// =======
-// = art =
-// =======
+/* SOMEHOW DOES NOT WORK!!!
 $args = array(
-	'name' => 'antennen_arte',
-	'hyrarchical' => FALSE,
+	'table' => 'kategorien',
+	'relation' => 'm2s',
+	'target' => 'store'
+);
+add_table_data($args);
+*/
+
+// ===========
+// = Store =
+// ===========
+$args = array(
+	'name' => 'store',
+	'hyrarchical' => false,
 );
 set_table($args);
 
 $args = array(
-	'table' => 'antennen_arte',
-	'relation' => 'self',
-	'self_name' => 'antennenart_name',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
-
-// ==========
-// = Farben =
-// ==========
-$args = array(
-	'name' => 'farben',
-	'hyrarchical' => FALSE,
-);
-set_table($args);
-
-$args = array(
-	'table' => 'farben',
-	'relation' => 'self',
-	'self_name' => 'farben_hex',
-	'self_definition' => 'varchar(255)'
+	'table' => 'store',
+	'relation' => 's2m',
+	'target' => 'kategorien'
 );
 add_table_data($args);
 
 $args = array(
-	'table' => 'farben',
+	'table' => 'store',
 	'relation' => 'self',
-	'self_name' => 'farben_name',
+	'self_name' => 'name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
-
-// ===============
-// = Materialien =
-// ===============
-$args = array(
-	'name' => 'antennen_materialien',
-	'hyrarchical' => FALSE,
-);
-set_table($args);
-
-$args = array(
-	'table' => 'antennen_materialien',
-	'relation' => 'self',
-	'self_name' => 'materialien_name',
-	'self_definition' => 'varchar(255)'
-);
-add_table_data($args);
-
-
-
 
 
 ?>

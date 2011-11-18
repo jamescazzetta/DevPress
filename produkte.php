@@ -5,7 +5,7 @@ include('nav.php');
 //Title
 echo '<section class="dp-title">';
   echo '<hgroup>';
-	echo '<h2>Antennen<a href="antennen.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>';
+	echo '<h2>Produkte<a href="produkte.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>';
   echo '</hgroup>';
 echo '</section>';
 
@@ -17,48 +17,26 @@ function editit($data, $thetable){
 		echo "<div class='db-edit-col'>";
 		echo '<h4 class="db-edit-title">Infomrationen bearbeiten (self)</h4>';
 			echo mr_textfield($data, $thetable, 'Artikelnummer', '#', ' autofocus="autofocus" ');
-			echo mr_textarea($data, $thetable, 'artikeltext', 'Beschreibung');
-			echo mr_textfield($data, $thetable, 'durchmesser', '⌀');
-			echo mr_textfield($data, $thetable, 'gewicht', 'Gewicht');
-			echo mr_textfield($data, $thetable, 'preis', 'Preis');
+			echo mr_textfield($data, $thetable, 'name', 'Name', ' autofocus="autofocus" ');
+			echo mr_textarea($data, $thetable, 'beschreibung', 'Beschreibung');
+			echo mr_textarea($data, $thetable, 'techdata', 'Technische Daten');
+			echo mr_textfield($data, $thetable, 'preis_chf', 'Preis');
 			echo mr_textfield($data, $thetable, 'roworder', 'Ordnung');
 		echo "</div>";
 
 		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Bauformen zuteilung(m2m)</h4>';
+			echo '<h4 class="db-edit-title">Kategorie zuteilung(m2m)</h4>';
 			$args = array(
-				"table" => "antennen_bauformen",
+				"table" => "kategorien",
 				"original_table" => $thetable,
-				"label" => "Bauformen",
-				"colvalues" => array("bauform_name"),
+				"label" => "Kategorie(n)",
+				"colvalues" => array("name"),
 				"valueseperation" => " "
 			);
 			echo mr_checkboxes($args, $data);
 		echo "</div>";
 
-		echo "<div class='db-edit-col'>";			
-			echo '<h4 class="db-edit-title">Art(m2s)</h4>';
-			$args = array(
-				'thetable' => $thetable,
-				'target_table' => 'antennen_arte',
-				'target_col' => 'antennenart_name',
-				'target_col_label' => 'Art'
-			);
-			echo mr_select($args, $data);
-		echo "</div>";
-		
-		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Materialien(m2m)</h4>';
-			$args = array(
-				"table" => "antennen_materialien",
-				"original_table" => $thetable,
-				"label" => "Materialien",
-				"colvalues" => array("materialien_name"),
-				"valueseperation" => " "
-			);
-			echo mr_checkboxes($args, $data);
-		echo "</div>";
-		
+/*		
 		echo "<div class='db-edit-col'>";
 			echo '<h4 class="db-edit-title">Farben(s2m)</h4>';
 			$args = array(
@@ -78,6 +56,7 @@ function editit($data, $thetable){
 			echo multigroup($args, $data);
 			
 		echo "</div>";
+*/
 	
 	//$args = array('aktiontitle' => 'Aktionen', 'submit' => 'Übernehmen', 'cancel' => 'Abbrechen', 'delete' => 'Löschen');
 	echo mr_endform($data);
@@ -88,8 +67,8 @@ function editit($data, $thetable){
 
 //edit
 echo "<section class='db-edit'>";
-	$thetable = 'antennen';
-	$joins = array('antennen_bauformen', 'farben', 'antennen_materialien', 'antennen_arte');
+	$thetable = 'produkte';
+	$joins = array('kategorien');
 	form_logic($thetable, $joins);
 echo "</section>";
 
@@ -104,35 +83,20 @@ $constr = array(
 			'type' => 'title'
 		),
 	3 => array(
-			'name' => 'artikeltext',
+			'name' => 'beschreibung',
 			'title' => 'Beschreibung',
 			'type' => 'field'
 		),
-	4 => array(
-			'name' => 'durchmesser',
-			'title' => '⌀',
-			'type' => 'field'
-		),
-	5 => array(
-			'name' => 'gewicht',
-			'title' => 'Gewicht',
-			'type' => 'field'
-		),
-	6 => array(
-			'name' => 'indooroutdoor',
-			'title' => 'Outdoor',
-			'type' => 'truefalse'
-		),
 	7 => array(
-			'name' => 'preis',
+			'name' => 'preis_chf',
 			'title' => 'Preis',
 			'type' => 'field'
 		),
 	8 => array(
-			'name' => 'antennen_bauformen',
-			'title' => 'Bauformen',
+			'name' => 'kategorien',
+			'title' => 'Kategorie(n)',
 			'type' => 'm2m',
-			'm2mcol' => 'bauform_name'
+			'm2mcol' => 'name'
 		)
 	
 );
