@@ -19,7 +19,7 @@ function mr_endform($data, $args = array(
 ){
 	$return = '<p>';
 	$return .= '<span class="button-group">';
-		$return .= mr_tf_published($args['publish']);
+		//$return .= mr_tf_published($args['publish']);
 		$return .= mr_submitbutton($args['submit']);
 		if ($data) {$return .= mr_deletebutton($data['id'], $args['delete']);}	
 		$return .= mr_cancelbutton($args['cancel']);
@@ -184,7 +184,7 @@ function mr_bool($data, $table, $col, $value = "Value", $trueval = "T", $falseva
 		$postname = "field_{$col}_{$id}";
 		$checked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
 	}
-	return '<label for='.$postname.'>'.$value.'</lable><div><input '.$checked.' name="'.$postname.'" type="checkbox" id="'.$postname.'" /></div>';
+	return '<label for="'.$postname.'">'.$value.'</label><div><input '.$checked.' name="'.$postname.'" type="checkbox" id="'.$postname.'" /></div>';
 }
 
 $args = array(
@@ -239,9 +239,8 @@ function mr_checkboxes($args, $data){
 	if ($args['parent_id'] == 'root') {
 		$isroot = TRUE;
 	}
-	
 		//if ($isroot) {$return .= "<label>$args[label]</label>";}
-		if ($connectiondata > 0) {$return .= "<ul class='".($isroot ? 'parent' : 'child')."'>";} else {return;}
+		if (!empty($connectiondata)) {$return .= "<ul class='".($isroot ? 'parent' : 'child')."'>";} else {return;}
 		foreach ($connectiondata as $key => $value) {
 			
 			$return .= "<li>";
@@ -375,6 +374,7 @@ function mr_BuildListTable($data, $constr, $thetable){
 	}
 	
 	$headfoot = '<tr>';
+	$headfoot .= '<th>Actions</th>';
 	foreach ($constr as $key => $col) {
 		$it_orderby = 'asc';
 		if ($orderby == $col['name'] && $order == 'asc') {
@@ -382,7 +382,6 @@ function mr_BuildListTable($data, $constr, $thetable){
 		} 
 		$headfoot .= '<th id="' . $col['name'] . '" >' . $col['title'] . '</th>';
 	}
-	$headfoot .= '<th>Actions</th>';
 	$headfoot .= '</tr>';
 
 	$content = mr_listrow($data, $constr, 0, $thetable);
@@ -491,7 +490,7 @@ function multigroup($args, $data){
 		}
 	}
 	if ($_GET['action'] == 'new') {
-		$return .= "Wird nach dem Speichern aktiviert";
+		$return .= "Das Multigroup Module wird nach dem Speichern aktiviert";
 	} else {
 		$return .=  "<input type='submit' name='".$args['target_table']."' value='+' class='plus'> Hinzufügen";	
 	}
@@ -519,6 +518,7 @@ function mr_select($args, $data){
 	$selected_id = ($data ? $data[$selected_col] : '');
 	
 	$target_data = data(array('table' => $args['target_table']));
+	if (empty($target_data)) {return;}
 	foreach ($target_data as $t_d) {
 		$colvalue = $args['target_col'];
 		$selected = ($t_d['id'] == $selected_id ? ' SELECTED ' : '');
@@ -566,6 +566,7 @@ function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 		}
 		if ($current_parentid == $parent_id) {
 			$return .=  '<tr id="post-' . $dataitem['id'] . ' level_'.$level.'" class="author-self status-publish format-default iedit" valign="top">';
+			$return .= '<td class="column-edit"><span class="button-group"><a href="?action=edit&edit_id='.$dataitem['id'].'" class="button icon edit">Edit</a><a href="#" class="button icon remove danger">Remove</a></span></td>';	
 			foreach ($constr as $col) {
 				switch ($col['type']) {
 					case 'title':
@@ -591,7 +592,6 @@ function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 					break;
 				}
 			}		
-			$return .= '<td class="column-edit"><span class="button-group"><a href="?action=edit&edit_id='.$dataitem['id'].'" class="button icon edit">Edit</a><a href="#" class="button icon remove danger">Remove</a></span></td>';	
 			$return .= '</tr>';			
 			if (has_children($thetable, $dataitem['id'])) {
 				$levelnew = $level + 1;

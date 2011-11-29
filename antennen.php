@@ -2,8 +2,14 @@
 include('devpress/header.php'); 
 include('nav.php'); 
 echo "<section id='content'>";
-echo '<h2>Antennen<a href="antennen.php?action=new" class="button icon add">Add</a></h2>';
+echo '<h2>Antennen</h2>';
 
+$addnewbutton = '<a href="antennen.php?action=new" class="button icon add">Add New</a><br><br>';
+if (array_key_exists('action', $_GET)) {
+	echo ($_GET['action'] != 'new' ? $addnewbutton : '<p>The completion of this form, will cause a new entry</p>');
+} else {
+	echo $addnewbutton;
+}
 
 function editit($data, $thetable){
 	echo mr_startform($data, $thetable);
@@ -16,7 +22,7 @@ function editit($data, $thetable){
 			echo mr_textarea($data, $thetable, 'artikeltext', 'Beschreibung');
 		echo "</section>";
 		echo "<section>";
-			echo mr_textfield($data, $thetable, 'durchmesser', '⌀');
+			echo mr_textfield($data, $thetable, 'durchmesser', 'Durchmesser ⌀');
 		echo "</section>";
 		echo "<section>";
 			echo mr_textfield($data, $thetable, 'gewicht', 'Gewicht');
@@ -40,7 +46,11 @@ function editit($data, $thetable){
 				"colvalues" => array("bauform_name"),
 				"valueseperation" => " "
 			);
-		echo mr_checkboxes($args, $data);
+		if (mr_checkboxes($args, $data)) {
+			echo mr_checkboxes($args, $data);
+		} else {
+			echo "Erstellen Sie ein paar <strong>Bauformen</strong> damit Sie dieses Produkt zuteilen können.";
+		}
 		echo "</section>";
 		echo "<section>";
 			$args = array(
@@ -49,7 +59,11 @@ function editit($data, $thetable){
 				'target_col' => 'antennenart_name',
 				'target_col_label' => 'Art'
 			);
-			echo mr_select($args, $data);
+			if (mr_select($args, $data)) {
+				echo mr_select($args, $data);
+			} else {
+				echo "Erstellen Sie ein paar <strong>Arten</strong> damit Sie dieses Produkt zuteilen können.";
+			}
 		echo "</section>";
 		echo "<section>";
 			$args = array(
@@ -59,7 +73,13 @@ function editit($data, $thetable){
 				"colvalues" => array("materialien_name"),
 				"valueseperation" => " "
 			);
-			echo mr_checkboxes($args, $data);
+			if (mr_checkboxes($args, $data)) {
+				echo mr_checkboxes($args, $data);
+			} else {
+				echo "Erstellen Sie ein paar <strong>Materialien</strong> damit Sie dieses Produkt zuteilen können.";
+			}
+			
+			
 		echo "</section>";
 		echo "<section>";
 			$args = array(
@@ -96,7 +116,7 @@ $data = data(array('table' => $thetable, $joins));
 $constr = array(
 	2 => array(
 			'name' => 'Artikelnummer',
-			'title' => '#',
+			'title' => 'Artikelnummer',
 			'type' => 'title'
 		),
 	3 => array(
@@ -106,7 +126,7 @@ $constr = array(
 		),
 	4 => array(
 			'name' => 'durchmesser',
-			'title' => '⌀',
+			'title' => 'Durchmesser ⌀',
 			'type' => 'field'
 		),
 	5 => array(
