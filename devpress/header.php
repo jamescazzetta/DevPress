@@ -18,65 +18,44 @@ include('erm.php');
 <html lang="en">
 
 <head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
-	<title>DevPress</title>
-	
-	<link rel="stylesheet" href="devpress/style.css" type="text/css" media="screen" title="no title" charset="utf-8">
+	<meta charset="utf-8" />
 
-	<!-- = Jquery = -->
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
-	
-	<!-- = Uploader = -->
-	<script src="js/jquery.imgareaselect.min.js"></script>
+    <title>Admin Control Panel</title>
 
-	<!-- Colorpicker -->
-	<link rel="stylesheet" href="js/colorpicker/css/colorpicker.css" type="text/css" />
-	<script src="js/colorpicker/js/colorpicker.js"></script>
-	<script charset="utf-8">
-		$(function() {
-
-			$('.colorpickerinput').ColorPicker({
-				onSubmit: function(hsb, hex, rgb, el) {
-					$(el).val(hex);
-					$(el).ColorPickerHide();
-					$('.collorbox').css('background-color','#' + value);
-			      
-				},
-				onBeforeShow: function () {
-					$(this).ColorPickerSetColor(this.value);
-				},
-				onChange: function (hsb, hex, rgb, el) {
-					$(el).next('.collorbox').css('backgroundColor', '#' + hex);
-				}
-			})
-			.bind('keyup', function(){
-				$(this).ColorPickerSetColor(this.value);
-			});
-			
-			//$('.colorpickerinput').after('<div class="collorbox" style="height:20px;width:20px">&nbsp</div>');
-
-		});
-	</script>
-
-
-	<!-- input toggle-->
-	<link rel="stylesheet" href="js/iphone-style-checkboxes.css" type="text/css" media="screen" title="no title" charset="utf-8">
-	<script src="js/iphone-style-checkboxes.js" type="text/javascript"></script>
-
-	
-	
-	
-	
-	<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-	<meta name="generator" content="WebMotionUK" />
-	
-
-
-
+    <link rel="stylesheet" href="devpress/css/reset.css" />
+    <link rel="stylesheet" href="devpress/css/visualize.css" />
+    <link rel="stylesheet" href="devpress/css/datatables.css" />
+    <link rel="stylesheet" href="devpress/css/buttons.css" />
+    <link rel="stylesheet" href="devpress/css/checkboxes.css" />
+    <link rel="stylesheet" href="devpress/css/inputtags.css" />
+    <link rel="stylesheet" href="devpress/css/main.css" />
+    
+    <!--[if lt IE 9]>
+    <link rel="stylesheet" href="css/ie.css" />
+    <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 </head>
 
 <body>
 
-<div id='wpbody'>
-<div id="wpbody-content">
-<div class="wrap">
+  <div id="gradient">
+      <div id="stars">
+        <div id="container">
+		 <header>
+
+		    <!-- Logo -->
+		    <h1 id="logo">Admin Control Panel</h1>
+
+		    <!-- User info -->
+		    <div id="userinfo">
+		      <img src="devpress/img/avatar.png" alt="Bram Jetten" />
+		      <div class="intro">
+		        Welcome Bram<br />
+		        You have <a href="#">3 new messages</a>
+		      </div>
+		    </div>
+
+		  </header>
+		
+		<!-- The application "window" -->
+          <div id="application">

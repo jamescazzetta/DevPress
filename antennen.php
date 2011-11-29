@@ -1,31 +1,38 @@
 <?php 
 include('devpress/header.php'); 
 include('nav.php'); 
-
-//Title
-echo '<section class="dp-title">';
-  echo '<hgroup>';
-	echo '<h2>Antennen<a href="antennen.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>';
-  echo '</hgroup>';
-echo '</section>';
+echo "<section id='content'>";
+echo '<h2>Antennen<a href="antennen.php?action=new" class="button icon add">Add</a></h2>';
 
 
 function editit($data, $thetable){
-	echo "<section id='db-edit'>";	
 	echo mr_startform($data, $thetable);
 
-		echo "<div class='db-edit-col'>";
-		echo '<h4 class="db-edit-title">Infomrationen bearbeiten (self)</h4>';
-			echo mr_textfield($data, $thetable, 'Artikelnummer', '#', ' autofocus="autofocus" ');
+	echo '<div class="column left">';
+		echo "<section>";
+			echo mr_textfield($data, $thetable, 'Artikelnummer', 'Artikel Nr.', ' autofocus="autofocus" ');
+		echo "</section>";
+		echo "<section>";
 			echo mr_textarea($data, $thetable, 'artikeltext', 'Beschreibung');
+		echo "</section>";
+		echo "<section>";
 			echo mr_textfield($data, $thetable, 'durchmesser', '⌀');
+		echo "</section>";
+		echo "<section>";
 			echo mr_textfield($data, $thetable, 'gewicht', 'Gewicht');
+		echo "</section>";
+		echo "<section>";
 			echo mr_textfield($data, $thetable, 'preis', 'Preis');
+		echo "</section>";
+		echo "<section>";
+			echo mr_bool($data, $thetable, 'outdoor', 'Outdoor');
+		echo "</section>";
+		echo "<section>";
 			echo mr_textfield($data, $thetable, 'roworder', 'Ordnung');
-		echo "</div>";
-
-		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Bauformen zuteilung(m2m)</h4>';
+		echo "</section>";
+	echo "</div>";
+	echo '<div class="column right">';
+		echo "<section>";
 			$args = array(
 				"table" => "antennen_bauformen",
 				"original_table" => $thetable,
@@ -33,11 +40,9 @@ function editit($data, $thetable){
 				"colvalues" => array("bauform_name"),
 				"valueseperation" => " "
 			);
-			echo mr_checkboxes($args, $data);
-		echo "</div>";
-
-		echo "<div class='db-edit-col'>";			
-			echo '<h4 class="db-edit-title">Art(m2s)</h4>';
+		echo mr_checkboxes($args, $data);
+		echo "</section>";
+		echo "<section>";
 			$args = array(
 				'thetable' => $thetable,
 				'target_table' => 'antennen_arte',
@@ -45,10 +50,8 @@ function editit($data, $thetable){
 				'target_col_label' => 'Art'
 			);
 			echo mr_select($args, $data);
-		echo "</div>";
-		
-		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Materialien(m2m)</h4>';
+		echo "</section>";
+		echo "<section>";
 			$args = array(
 				"table" => "antennen_materialien",
 				"original_table" => $thetable,
@@ -57,10 +60,8 @@ function editit($data, $thetable){
 				"valueseperation" => " "
 			);
 			echo mr_checkboxes($args, $data);
-		echo "</div>";
-		
-		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Farben(s2m)</h4>';
+		echo "</section>";
+		echo "<section>";
 			$args = array(
 				'thetable' => $thetable,
 				'label_sing' => 'Farbe',
@@ -76,26 +77,21 @@ function editit($data, $thetable){
 				)
 			);
 			echo multigroup($args, $data);
-			
-		echo "</div>";
-	
-	//$args = array('aktiontitle' => 'Aktionen', 'submit' => 'Übernehmen', 'cancel' => 'Abbrechen', 'delete' => 'Löschen');
+		echo "</section>";
+	echo "</div>";
+	echo "<div style='clear:both'></div><br>";
 	echo mr_endform($data);
-	echo "<div class='clear'>&nbsp;</div>";
-	echo "</section>";
-}
+	
+	}
 
 
 //edit
-echo "<section class='db-edit'>";
 	$thetable = 'antennen';
 	$joins = array('antennen_bauformen', 'farben', 'antennen_materialien', 'antennen_arte');
 	form_logic($thetable, $joins);
-echo "</section>";
 
 
 //list
-echo '<section class="dp-list">';
 $data = data(array('table' => $thetable, $joins));
 $constr = array(
 	2 => array(
@@ -137,7 +133,8 @@ $constr = array(
 	
 );
 mr_BuildListTable($data, $constr, $thetable);
-echo '</section>';
 
 
+echo "<div style='clear:both'></div>";
+echo "</section>";
 include('devpress/footer.php'); ?>		

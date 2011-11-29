@@ -51,8 +51,8 @@ add_table_data($args);
 $args = array(
 	'table' => 'antennen',
 	'relation' => 'self',
-	'self_name' => 'indooroutdoor',
-	'self_definition' => 'int(2)'
+	'self_name' => 'outdoor',
+	'self_definition' => 'BOOL'
 );
 add_table_data($args);
 

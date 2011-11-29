@@ -17,49 +17,36 @@ function mr_endform($data, $args = array(
 		'publish' => 'Publish'
 		)
 ){
-	$return = '';
-	$return .= "<div class='db-edit-col'>";
-		$return .= '<h4 class="db-edit-title">'.$args['aktiontitle'].'</h4>';
+	$return = '<p>';
+	$return .= '<span class="button-group">';
 		$return .= mr_tf_published($args['publish']);
-		
 		$return .= mr_submitbutton($args['submit']);
-		$return .= mr_cancelbutton($args['cancel']);
 		if ($data) {$return .= mr_deletebutton($data['id'], $args['delete']);}	
-	$return .= "</div>";
-	
-	$return .= '</form>';
+		$return .= mr_cancelbutton($args['cancel']);
+	$return .= '</span>';
+	$return .= '</p></form>';
 	
 	return $return;
 }
 
 function mr_submitbutton($value){
-	return "<input type='submit' name='submit' value='$value' class='important'>";
+	return "<input type='submit' name='submit' value='$value' class='button primary submit icon approve'>";
 }
 
 function mr_cancelbutton($value){
-	return "<a href='".$_SERVER['SCRIPT_NAME']."' class='linktobutton'>$value</a>";
+	return "<a href='".$_SERVER['SCRIPT_NAME']."' class='button'>$value</a>";
 }
 
 function mr_deletebutton($id, $value){
-	return "<a href='?delete='.$id.'' class='linktobutton'>$value</a>";
+	return "<a href='?delete='.$id.'' class='button icon trash danger'>$value</a>";
 }
 
 function mr_tf_published($value, $trueval = "public", $falseval = "hidden"){
-	return '
-	<script type="text/javascript" charset="utf-8">
-		$(window).load(function() {
-			$(\'.on_off :checkbox\').iphoneStyle({ checkedLabel: \''.$trueval.'\', uncheckedLabel: \''.$falseval.'\',resizeHandle: true }); 
-		});
-	</script>
-	<table>
-		<tr class="on_off">
-			<td>
-				<input type="checkbox" id="on_off" />
-			</td>
-		</tr>
-		</table>
-	';
+	$return = "<label for='on_off'>Published<small>The username must consist of at least 3 characters</small></label>";
+	$return = '<input type="checkbox" id="on_off" />';
+	return $return;
 }
+
 function mr_createentry($table){
 		$sql = "INSERT INTO {$GLOBALS['tableprefix']}_{$table}(id)
 		VALUES (NULL)";
@@ -115,8 +102,8 @@ function mr_textfield($data = '', $table, $col, $label, $customattr = ''){
 		$value = $data[$col];
 	}
 	
-	$return = "<label for='$postname'>$label</label>";
-	$return .= "<input id='$postname' type='text' name='$postname' value='$value' $customattr>";
+	$return = "<label for='$postname'>$label<small>The username must consist of at least 3 characters</small></label>";
+	$return .= "<div><input id='$postname' type='text' name='$postname' value='$value' $customattr></div>";
 	
 	return $return;
 }
@@ -132,13 +119,10 @@ function mr_savetextfielddata($table, $col, $value, $id){
 	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$value</strong></p>", 3, "infos.log");
 }
 
-
 //colorfield (self)
 function mr_colorfield($data = '', $table, $col, $label){	
 	return mr_textfield($data, $table, $col, $label, ' class="colorpickerinput" ');
 }
-
-
 
 //textarea (self)
 function mr_textarea($data = '', $table, $field, $label, $customattr = '', $rows = 5, $cols = 20){
@@ -154,7 +138,7 @@ function mr_textarea($data = '', $table, $field, $label, $customattr = '', $rows
 	
 	
 	$return = "<label for='field_{$name}_{$id}'>$label</label>";
-	$return .= "<textarea rows='$rows' cols='$cols' id='field_{$name}_{$id}' type='text' name='$name' $customattr>$value </textarea>";
+	$return .= "<div><textarea rows='$rows' cols='$cols' id='field_{$name}_{$id}' type='text' name='$name' $customattr>$value </textarea></div>";
 	
 	return $return;
 }
@@ -173,6 +157,35 @@ function mr_savetextareadata($table, $name, $newid = ''){
 
 }
 
+//boll
+function mr_bool($data, $table, $col, $value = "Value", $trueval = "T", $falseval = "F"){
+	// data has been submited
+	if ($_POST) {
+		$id = ($_GET['edit_id'] == 0 ? mr_createentry($table) : $data['id']);
+		$postname = "field_{$col}_{$id}";
+		if (array_key_exists($postname,$_POST)) {
+			//set it to TRUE
+			$sql = "UPDATE $GLOBALS[tableprefix].'_'.$table ($col) VALUES (TRUE) WHERE id = $id";
+		} else {
+			//set it to FALSE
+		}
+		$data = data(array('table' => $table), array('ID' => $id), 1);
+		$checked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
+	
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
+		$id = 'new';
+		$postname = "field_{$col}_{$id}";
+		$checked = '';
+
+	// no data has been submited (just edit opened)
+	} else {
+		$id = $data['id'];
+		$postname = "field_{$col}_{$id}";
+		$checked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
+	}
+	return '<label for='.$postname.'>'.$value.'</lable><div><input '.$checked.' name="'.$postname.'" type="checkbox" id="'.$postname.'" /></div>';
+}
 
 $args = array(
 	"table" => "antennen_materialien",
@@ -199,7 +212,7 @@ function mr_checkboxes($args, $data){
 	// no data has been submited (just new one opened)
 	} elseif ($_GET['action'] == 'new') {
 		$id = 'new';
-		$postname = "field_{$col}_{$id}";
+		$postname = $target_table;
 		$value = '';
 
 	// no data has been submited (just edit opened)
@@ -362,21 +375,21 @@ function mr_BuildListTable($data, $constr, $thetable){
 	}
 	
 	$headfoot = '<tr>';
-	$headfoot .= '<th id="cb" class="manage-column column-cb check-column"><!--<input type="checkbox">--></th>';
 	foreach ($constr as $key => $col) {
 		$it_orderby = 'asc';
 		if ($orderby == $col['name'] && $order == 'asc') {
 			$it_orderby = 'desc';
 		} 
-		$headfoot .= '<th scope="col" id="' . $col['name'] . '" class="manage-column column-'.$col['name'].' sortable '.$it_orderby.'" style=""><a href="?orderby=' . $col['name'] . '&amp;order='.$it_orderby.'" ><span>' . $col['title'] . '</span><span class="sorting-indicator"></span></a></th>';
+		$headfoot .= '<th id="' . $col['name'] . '" >' . $col['title'] . '</th>';
 	}
+	$headfoot .= '<th>Actions</th>';
 	$headfoot .= '</tr>';
 
 	$content = mr_listrow($data, $constr, 0, $thetable);
 
 	echo '<form id="whatever" action method="get">';
 	
-	echo '<table class="dp-list-table" cellspacing="0">';
+	echo '<table class="datatable" cellspacing="0">';
 		echo "<thead>";
 			echo $headfoot;
 		echo "</thead>";
@@ -387,17 +400,6 @@ function mr_BuildListTable($data, $constr, $thetable){
 			echo $headfoot;
 		echo "</tfoot>";
 	echo "</table>";
-	/*
-		echo '<div class="tablenav bottom">';
-			echo '<div class="alignleft actions">';
-				echo '<select name="action2">';
-					echo '<option value="-1" selected="selected">Bulk Actions</option>';
-					echo '<option value="edit" class="hide-if-no-js">Edit</option>';
-					echo '<option value="trash">Delete</option>';
-				echo '</select>';
-			echo '<input type="submit" name="" id="doaction2" class="button-secondary action" value="Apply">';
-		echo '</div>';
-	*/
 	echo '</div>';
 	echo '</form>';
 }
@@ -563,19 +565,12 @@ function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 			$current_parentid = 0;
 		}
 		if ($current_parentid == $parent_id) {
-			//if ($dataitem['parent_id'] == $parent_id) {$return .= '–';}
-				$options = '<div class="row-actions">
-				<span class="edit"><a href="?action=edit&edit_id='.$dataitem['id'].'" title="Edit this item">Edit</a> | </span>
-				<!--<span class="inline hide-if-no-js"><a href="#" class="editinline" title="Edit this item inline">Quick&nbsp;Edit</a> | </span>-->
-				<!--<span class="trash"><a class="submitdelete" title="Move this item to the Trash" href="?delete='.$dataitem['id'].'">Delete</a></span>-->
-				</div>';
 			$return .=  '<tr id="post-' . $dataitem['id'] . ' level_'.$level.'" class="author-self status-publish format-default iedit" valign="top">';
-			$return .= '<td class="column-cb"><!--<input type="checkbox" name="post[]" value="'.$dataitem['id'].'" />--></td>';
 			foreach ($constr as $col) {
 				switch ($col['type']) {
 					case 'title':
 						$pre = str_repeat("– ", $level);
-						$return .= "<td><a href='?action=edit&edit_id=$key'>" . $pre . $dataitem[$col['name']] . "</a>$options</td>";
+						$return .= "<td><a href='?action=edit&edit_id=$key'>" . $pre . $dataitem[$col['name']] . "</a></td>";
 					break;
 					case 'm2m':
 					$m2table = $GLOBALS['tableprefix'].'_'.$col['name'];
@@ -592,10 +587,11 @@ function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 						$return .= "<td>" . ($dataitem['bild'] ? "<img src='" . $dataitem['bild'] . "' alt='image' />" : 'empty')."</td>";
 					break;
 					default:
-						$return .= "<td>" . $dataitem[$col['name']] . "</td>";
+						$return .= "<td>" /*. $dataitem[$col['name']]*/ . "</td>";
 					break;
 				}
-			}
+			}		
+			$return .= '<td class="column-edit"><span class="button-group"><a href="?action=edit&edit_id='.$dataitem['id'].'" class="button icon edit">Edit</a><a href="#" class="button icon remove danger">Remove</a></span></td>';	
 			$return .= '</tr>';			
 			if (has_children($thetable, $dataitem['id'])) {
 				$levelnew = $level + 1;
