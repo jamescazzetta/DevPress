@@ -1,4 +1,10 @@
 <?php //include('echolog.php'); ?>
+
+<div style='clear:both'></div>
+</section>
+
+
+
 	<div class="debug">
 	<?php
 	/*

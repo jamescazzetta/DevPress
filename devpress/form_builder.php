@@ -1,12 +1,52 @@
 <?php
 
-function mr_startform($data, $table){
-	if ($data) {
-		$id = $data['id'];
+
+
+function the_form(){
+	global $thetable;
+	global $joins;
+	global $thedata;
+	global $filename;
+	global $globalid;
+	global $thename;
+	
+	echo "<h2>$thename</h2>";
+	
+	$addnewbutton = '<a href="'.$filename.'?action=new" class="button icon add">Add New</a><br><br>';
+	if (array_key_exists('action', $_GET)) {
+		echo ($_GET['action'] != 'new' ? $addnewbutton : '<p>The completion of this form, will cause a new entry</p>');
 	} else {
-		$id = 0;
+		echo $addnewbutton;
 	}
-	return '<form  method="post" action="?action=save&edit_id=' . $id .'"><input type="hidden" name="id" value="' . $id . '"> ';
+	
+	if ( array_key_exists('edit_id', $_GET)) {
+		$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $globalid), 1);
+	} else {
+		$data = array();
+	}
+	
+		//delete
+		if (array_key_exists('delete', $_GET)) {
+			mr_deleteentry($thetable, $_GET['delete']);
+			//mr_deletetweenentries($thetable, 'antennen_bauformen', $_GET['delete']);
+		}
+
+		//edit
+		if ( array_key_exists('action', $_GET)) {
+			echo mr_startform($data, $thetable);
+			editit($data);
+			echo mr_endform($data);
+		} else {
+			//echo "<p>Diese Einträge werden nach <a href='sparten.php' >Sparten</a> geordnet und werden auf der <a href='http://algra.pcardsolution.ch/v3/mitarbeiter.php'>Ansprechspartner</a> Seite angezeigt.</p>";
+		}
+		
+		
+}
+
+function mr_startform($data, $table){
+	global $globalid;
+	return '<form  method="post" action="?action=save&edit_id=' . $globalid .'"><input type="hidden" name="id" value="' . $globalid . '"> ';
+	
 }
 
 function mr_endform($data, $args = array(
@@ -47,13 +87,7 @@ function mr_tf_published($value, $trueval = "public", $falseval = "hidden"){
 	return $return;
 }
 
-function mr_createentry($table){
-		$sql = "INSERT INTO {$GLOBALS['tableprefix']}_{$table}(id)
-		VALUES (NULL)";
-		mysql_query($sql);
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>" . mysql_insert_id() ."</strong> for <strong>$table</strong> created</p>", 3, "infos.log");
-		return mysql_insert_id();
-};
+
 
 function mr_deleteentry($table, $id){
 	$table = $GLOBALS['tableprefix']."_".$table;
@@ -77,15 +111,16 @@ function mr_deletetweenentries($table1, $table2, $id){
 }
 
 //textfield (self)
-function mr_textfield($data = '', $table, $col, $label, $customattr = ''){
-	
+function mr_textfield($data = '', $table, $col, $label, $customattr = '', $type = 'text'){
+	global $globalid;
 	// data has been submited
 	if ($_POST) {
-		$id = ($_GET['edit_id'] == 0 ? mr_createentry($table) : $data['id']);
-		$postname = "field_{$col}_{$id}";
+		$id = ($_GET['edit_id'] == 0 ? $globalid : $data['id']);
+		$postname = ($_GET['edit_id'] == 0 ? "field_{$col}_new" : "field_{$col}_{$id}");
 		if (array_key_exists($postname,$_POST)) {
 			mr_savetextfielddata($table, $col, $_POST[$postname], $id);
 		}
+		$postname = "field_{$col}_{$id}";
 		$data = data(array('table' => $table), array('ID' => $id), 1);
 		$value = $data[$col];
 	
@@ -103,7 +138,7 @@ function mr_textfield($data = '', $table, $col, $label, $customattr = ''){
 	}
 	
 	$return = "<label for='$postname'>$label<small>The username must consist of at least 3 characters</small></label>";
-	$return .= "<div><input id='$postname' type='text' name='$postname' value='$value' $customattr></div>";
+	$return .= "<div><input id='$postname' type='$type' name='$postname' value='$value' $customattr></div>";
 	
 	return $return;
 }
@@ -125,20 +160,34 @@ function mr_colorfield($data = '', $table, $col, $label){
 }
 
 //textarea (self)
-function mr_textarea($data = '', $table, $field, $label, $customattr = '', $rows = 5, $cols = 20){
+function mr_textarea($data = '', $table, $col, $label, $customattr = '', $rows = 5, $cols = 20){
+	global $globalid;
+	// data has been submited
+	if ($_POST) {
+		$id = ($_GET['edit_id'] == 0 ? $globalid : $data['id']);
+		$postname = ($_GET['edit_id'] == 0 ? "field_{$col}_new" : "field_{$col}_{$id}");
+		if (array_key_exists($postname,$_POST)) {
+			mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+		}
+		$postname = "field_{$col}_{$id}";
+		$data = data(array('table' => $table), array('ID' => $id), 1);
+		$value = $data[$col];
 	
-	$name = $field;
-	if ($data) {
-		$value = ($data[$field] ? $data[$field] : '');
-		$id = $data['id'];
-	} else {
-		$value = '';
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
 		$id = 'new';
+		$postname = "field_{$col}_{$id}";
+		$value = '';
+
+	// no data has been submited (just edit opened)
+	} else {
+		$id = $data['id'];
+		$postname = "field_{$col}_{$id}";
+		$value = $data[$col];
 	}
-	
-	
-	$return = "<label for='field_{$name}_{$id}'>$label</label>";
-	$return .= "<div><textarea rows='$rows' cols='$cols' id='field_{$name}_{$id}' type='text' name='$name' $customattr>$value </textarea></div>";
+
+	$return = "<label for='$postname'>$label</label>";
+	$return .= "<div><textarea rows='$rows' cols='$cols' id='$postname' type='text' name='$postname' $customattr>$value </textarea></div>";
 	
 	return $return;
 }
@@ -158,33 +207,46 @@ function mr_savetextareadata($table, $name, $newid = ''){
 }
 
 //boll
-function mr_bool($data, $table, $col, $value = "Value", $trueval = "T", $falseval = "F"){
+function mr_bool($data, $table, $col, $value = "Or", $trueval = "True", $falseval = "False"){
+	global $globalid;
 	// data has been submited
-	if ($_POST) {
-		$id = ($_GET['edit_id'] == 0 ? mr_createentry($table) : $data['id']);
-		$postname = "field_{$col}_{$id}";
+		if ($_POST) {
+		$id = ($_GET['edit_id'] == 0 ? $globalid : $data['id']);
+		$postname = ($_GET['edit_id'] == 0 ? "field_{$col}_new" : "field_{$col}_{$id}");
 		if (array_key_exists($postname,$_POST)) {
 			//set it to TRUE
-			$sql = "UPDATE $GLOBALS[tableprefix].'_'.$table ($col) VALUES (TRUE) WHERE id = $id";
-		} else {
-			//set it to FALSE
+			$sql = "UPDATE {$GLOBALS['tableprefix']}_$table SET $col=$_POST[$postname] WHERE id = $id";
+			mysql_query($sql);
+			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$_POST[$postname]</strong></p>", 3, "infos.log");
+			
+
 		}
+		$postname = "field_{$col}_{$id}";
 		$data = data(array('table' => $table), array('ID' => $id), 1);
-		$checked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
-	
+		$truechecked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
+		$falsechecked = ($data['outdoor'] == FALSE ? 'CHECKED' : '');
 	// no data has been submited (just new one opened)
-	} elseif ($_GET['action'] == 'new') {
+	} elseif (isset($_GET['action']) && $_GET['action'] == 'new') {
 		$id = 'new';
 		$postname = "field_{$col}_{$id}";
-		$checked = '';
+		$truechecked = '';
+		$falsechecked = 'CHECKED';
 
 	// no data has been submited (just edit opened)
 	} else {
 		$id = $data['id'];
 		$postname = "field_{$col}_{$id}";
-		$checked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
+		$truechecked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
+		$falsechecked = ($data['outdoor'] == FALSE ? 'CHECKED' : '');
 	}
-	return '<label for="'.$postname.'">'.$value.'</label><div><input '.$checked.' name="'.$postname.'" type="checkbox" id="'.$postname.'" /></div>';
+		
+		
+	//return '<label>'.$value.'</label><div><input '.$checked.' name="'.$postname.'" type="checkbox" id="'.$postname.'" /><label for="'.$postname.'">Yes/No</label></div>';
+	$return = '<label>'.$value.'<small>Bitte auswälen</small></label><div>';
+	$return .= '<div class="column left"><input '.$truechecked.' name="'.$postname.'" type="radio" id="'.$postname.'_t" value="TRUE" /><label for="'.$postname.'_t">'.$trueval.'</label></div>';
+	$return .= '<div class="column right"><input '.$falsechecked.' name="'.$postname.'" type="radio" id="'.$postname.'_f" value="FALSE" /><label for="'.$postname.'_f">'.$falseval.'</label></div>';
+	$return .= '<div class="clear"></div></div>';
+	return $return;
 }
 
 $args = array(
@@ -387,7 +449,6 @@ function mr_BuildListTable($data, $constr, $thetable){
 	$content = mr_listrow($data, $constr, 0, $thetable);
 
 	echo '<form id="whatever" action method="get">';
-	
 	echo '<table class="datatable" cellspacing="0">';
 		echo "<thead>";
 			echo $headfoot;
@@ -529,28 +590,6 @@ function mr_select($args, $data){
 	return $return;
 }
 
-
-//formlogic
-function form_logic($thetable, $joins){
-	if ( array_key_exists('edit_id', $_GET)) {
-			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-	} else {
-		$data = array();
-	}
-
-	//delete
-	if (array_key_exists('delete', $_GET)) {
-		mr_deleteentry($thetable, $_GET['delete']);
-		//mr_deletetweenentries($thetable, 'antennen_bauformen', $_GET['delete']);
-	}
-
-	//edit
-	if ( array_key_exists('action', $_GET)) {
-		editit($data, $thetable);
-	} else {
-		//echo "<p>Diese Einträge werden nach <a href='sparten.php' >Sparten</a> geordnet und werden auf der <a href='http://algra.pcardsolution.ch/v3/mitarbeiter.php'>Ansprechspartner</a> Seite angezeigt.</p>";
-	}
-}
 
 
 //arvhivelist

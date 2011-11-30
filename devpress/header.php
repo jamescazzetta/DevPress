@@ -2,6 +2,7 @@
 //session_start();
 //include('devpress/xperto_check.php');
 
+
 //plugins
 include('plugins/upload.php');
 
@@ -59,3 +60,5 @@ include('erm.php');
 		
 		<!-- The application "window" -->
           <div id="application">
+	
+	

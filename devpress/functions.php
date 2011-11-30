@@ -1,5 +1,38 @@
 <?php
 // ==============
+// = globals =
+// ==============
+
+
+function mr_createentry($table){
+		$sql = "INSERT INTO {$GLOBALS['tableprefix']}_{$table}(id)
+		VALUES (NULL)";
+		mysql_query($sql);
+		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>" . mysql_insert_id() ."</strong> for <strong>$table</strong> created</p>", 3, "infos.log");
+		return mysql_insert_id();
+};
+
+// ===========
+// = GLOBALS =
+// ===========
+// existing data has been submited
+if ($_POST && $_GET['edit_id'] != 0) {
+	$globalid = $_GET['edit_id'];
+// new data has been submited
+} elseif ($_POST && $_GET['edit_id'] == 0) {
+	$globalid = mr_createentry($thetable);
+// no data has been submited (just new one opened)
+} elseif (isset($_GET['action']) && $_GET['action'] == 'new') {
+	$globalid = 0;
+// no data has been submited (just edit opened)
+} elseif (isset($_GET['action']) && $_GET['action'] == 'edit') {
+	$globalid = $_GET['edit_id'];
+} else {
+	$globalid = 0;
+}
+
+
+// ==============
 // = Essentials =
 // ==============
 

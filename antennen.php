@@ -1,25 +1,27 @@
 <?php 
+$thetable = 'antennen';
+$thename = 'Antennen';
+$thename_sing = 'Antenne';
+$filename = 'antennen.php';
+$joins = array('antennen_bauformen', 'farben', 'antennen_materialien', 'antennen_arte');
+
 include('devpress/header.php'); 
 include('nav.php'); 
-echo "<section id='content'>";
-echo '<h2>Antennen</h2>';
 
-$addnewbutton = '<a href="antennen.php?action=new" class="button icon add">Add New</a><br><br>';
-if (array_key_exists('action', $_GET)) {
-	echo ($_GET['action'] != 'new' ? $addnewbutton : '<p>The completion of this form, will cause a new entry</p>');
-} else {
-	echo $addnewbutton;
-}
 
-function editit($data, $thetable){
-	echo mr_startform($data, $thetable);
+
+function editit($data){
+	global $thetable;
+	global $joins;
+	global $thedata;
+	
 
 	echo '<div class="column left">';
 		echo "<section>";
-			echo mr_textfield($data, $thetable, 'Artikelnummer', 'Artikel Nr.', ' autofocus="autofocus" ');
+			echo mr_textfield($data, $thetable, 'Artikelnummer', 'Artikel Nr.', ' autofocus="autofocus" class="required" ');
 		echo "</section>";
 		echo "<section>";
-			echo mr_textarea($data, $thetable, 'artikeltext', 'Beschreibung');
+			echo mr_textarea($data, $thetable, 'artikeltext', 'Beschreibung', ' class="tags" ');
 		echo "</section>";
 		echo "<section>";
 			echo mr_textfield($data, $thetable, 'durchmesser', 'Durchmesser ⌀');
@@ -31,10 +33,10 @@ function editit($data, $thetable){
 			echo mr_textfield($data, $thetable, 'preis', 'Preis');
 		echo "</section>";
 		echo "<section>";
-			echo mr_bool($data, $thetable, 'outdoor', 'Outdoor');
+			echo mr_bool($data, $thetable, 'outdoor', 'Outdoor?', 'Ja', 'Nein');
 		echo "</section>";
 		echo "<section>";
-			echo mr_textfield($data, $thetable, 'roworder', 'Ordnung');
+			echo mr_textfield($data, $thetable, 'roworder', 'Ordnung', '', 'number');
 		echo "</section>";
 	echo "</div>";
 	echo '<div class="column right">';
@@ -100,15 +102,9 @@ function editit($data, $thetable){
 		echo "</section>";
 	echo "</div>";
 	echo "<div style='clear:both'></div><br>";
-	echo mr_endform($data);
-	
 	}
-
-
-//edit
-	$thetable = 'antennen';
-	$joins = array('antennen_bauformen', 'farben', 'antennen_materialien', 'antennen_arte');
-	form_logic($thetable, $joins);
+	
+	the_form();
 
 
 //list
@@ -154,7 +150,4 @@ $constr = array(
 );
 mr_BuildListTable($data, $constr, $thetable);
 
-
-echo "<div style='clear:both'></div>";
-echo "</section>";
 include('devpress/footer.php'); ?>		
