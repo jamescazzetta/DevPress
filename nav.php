@@ -1,27 +1,27 @@
 <!-- Primary navigation -->
 <nav id="primary">
   <ul>
-    <li class="current">
+    <li <?php echo ($thetable == "antennen" ? 'class="current"': '' ); ?> >
       <a href="antennen.php">
         <span class="icon dashboard"></span>
-        Dashboard
-      </a>
-    </li>
-    
-    <li>
-      <a href="antennen_bauformen.php">
-        <span class="icon pencil"></span>
-        Forms
-      </a>
-    </li>
-    
-    <li>
-      <a href="/tables">
-        <span class="icon tables"></span>
         Antennen
       </a>
     </li>
-
+    
+    <li <?php echo ($thetable == "antennen_arte" ? 'class="current"': '' ); ?> >
+      <a href="antennen_arte.php">
+        <span class="icon pencil"></span>
+        Antennen Arten
+      </a>
+    </li>
+    
+    <li <?php echo ($thetable == "antennen_bauformen" ? 'class="current"': '' ); ?> >
+      <a href="antennen_bauformen.php">
+        <span class="icon tables"></span>
+        Antennen Bauformen
+      </a>
+    </li>
+<!--
     <li>
       <a href="/charts">
         <span class="icon chart"></span>
@@ -49,7 +49,7 @@
         <span class="icon anchor"></span>
         Icons/buttons
       </a>
-    </li>               
+    </li>    -->           
   </ul>
 
   <input type="text" id="search" placeholder="Realtime search..." />

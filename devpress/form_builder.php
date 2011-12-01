@@ -45,7 +45,7 @@ function the_form(){
 
 function mr_startform($data, $table){
 	global $globalid;
-	return '<form  method="post" action="?action=save&edit_id=' . $globalid .'"><input type="hidden" name="id" value="' . $globalid . '"> ';
+	return '<form  method="post" class="editarea" action="?action=save&edit_id=' . $globalid .'"><input type="hidden" name="id" value="' . $globalid . '"> ';
 	
 }
 
@@ -302,6 +302,7 @@ function mr_checkboxes($args, $data){
 		$isroot = TRUE;
 	}
 		//if ($isroot) {$return .= "<label>$args[label]</label>";}
+		$return .= "<label>$args[label]</label><div>";
 		if (!empty($connectiondata)) {$return .= "<ul class='".($isroot ? 'parent' : 'child')."'>";} else {return;}
 		foreach ($connectiondata as $key => $value) {
 			
@@ -313,7 +314,8 @@ function mr_checkboxes($args, $data){
 				$inputtxt .= $value[$txt]; 
 			}
 			
-			$return .= '<input '.$checked.' type="checkbox" name="'.$target_table.'[]" value="'.$value['id'].'" />'. $inputtxt;
+			$return .= '<input id="'.$target_table.'_'.$value['id'].'" '.$checked.' type="checkbox" name="'.$target_table.'[]" value="'.$value['id'].'" />';
+			$return .= "<label for='{$target_table}_{$value['id']}' >$inputtxt</label>";
 			
 			//children
 			if (has_children($args['table'],$value['id'])) {
@@ -323,7 +325,7 @@ function mr_checkboxes($args, $data){
 			
 			$return .= "</li>";
 		}
-		$return .= "</ul>";
+		$return .= "</ul></div>";
 	
 	return $return;
 }
@@ -356,9 +358,18 @@ function mr_savecheckboxes($sourcetable, $savetable, $values, $id){
 
 
 //parentselect (self)
+/*
+$args = array(
+	'table' => '',
+	'label' => 'Label',
+	'colvalues' => array("name"),
+	'valueseperation' => " "
+)	
+	
+	
+*/
 function mr_parentselect($args, $data){
 	
-	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
 	$return = "";
 	if ($data) {
 		$current_parentid = $data['parent_id'];
@@ -368,7 +379,7 @@ function mr_parentselect($args, $data){
 		$current_id = 0;
 	}
 	
-	$return .= "<label>$args[label]</label>";
+	$return .= "<label>$args[label]</label><div>";
 	$return .= "<select name='parent_id'>";
 	$return .= "<option value='0'>None</option>";
 	
@@ -387,10 +398,11 @@ function mr_parentselect($args, $data){
 			$return .= $txt . '</option>';
 		}
 	}
-	$return .= "</select>";
+	$return .= "</select></div>";
 	
 	return $return;
 }
+
 
 function mr_saveparentselect($table, $newid){
 
@@ -565,6 +577,7 @@ function multigroup($args, $data){
 	$args = array(
 		'thetable' => 'materialien',
 		'target_table' => 'farben',
+		'label' => 'Farben',
 		'target_col' => 'material_name',
 		'target_col_label' => 'Material'
 		);
@@ -574,6 +587,7 @@ function mr_select($args, $data){
 	//save
 
 	//show
+	$return = "<label>$args[label]</label>";
 	$return = "<select name='$args[target_table]'>";
 	$selected_col = $GLOBALS['tableprefix'].'_'.$args['target_table'].'_id';
 	$selected_id = ($data ? $data[$selected_col] : '');

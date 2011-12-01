@@ -1,122 +1,42 @@
 <?php 
+$thetable = 'antennen_arte';
+$thename = 'Antennen Arte';
+$thename_sing = 'Antennen Art';
+$filename = 'antennen_arte.php';
+$joins = array('antennen');
+
 include('devpress/header.php'); 
 include('nav.php');
 
-function saveit($newid = '', $thetable){
-	mr_savecheckboxes($thetable, 'antennen', $newid);
-		
-}
 
-function editit($data, $thetable){
-	echo "<section id='db-edit'>";
-		echo mr_startform($data, $thetable);
+function editit($data){
+	global $thetable;
+	global $joins;
+	global $thedata;
 	
-		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Bearbeiten</h4>';
+
+		echo "<section>";
 			echo mr_textfield($data, $thetable, 'antennenart_name', 'art', ' autofocus="autofocus" ');
-		echo "</div>";
-	
-		echo "<div class='db-edit-col'>";
-			echo '<h4 class="db-edit-title">Antennen</h4>';
+		echo "</section>";
+		echo "<section>";
 			$args = array(
 				"table" => "antennen",
+				"original_table" => $thetable,
 				"label" => "Verknüpfte Antennen",
 				"colvalues" => array("Artikelnummer"),
 				"valueseperation" => " "
 			);
-			//echo mr_checkboxes($args, $data);;
-		echo "</div>";
+		if (mr_checkboxes($args, $data)) {
+			echo mr_checkboxes($args, $data);
+		} else {
+			echo "Erstellen Sie ein paar <strong>Bauformen</strong> damit Sie dieses Produkt zuteilen können.";
+		}
+		echo "</section>";
 		
-		echo "<div class='db-edit-col db-edit-submit'>";
-			echo '<h4 class="db-edit-title">Aktionen</h4>';
-			echo mr_submitbutton($value = 'Apply');
-		echo "</div>";
-		
-
-			
-		echo mr_endform();
-	echo "<div class='clear'>&nbsp;</div>";	
-	echo "</section>";
-}
-
-function uploadit($data, $table){
-/*	echo "<table>";
-	echo "<tr valign='top'>";
-	echo "<td>";
-	echo "<h5>Bilder hochladen</h5>";
-
-	ImgUpload($table, 'bild', 'Mitarbeiter Bilder', $data, array(70,70));
-
-	echo "</td>";
-	echo "</tr>";
-	echo "</table>";
-*/
-}
-
-?>
-<section class="dp-title">
-  <hgroup>
-	<h2>Arten<a href="antennen_arte.php?action=new" class="add-new-h2">Neuer Eintrag</a></h2>
-  </hgroup>
-</section>
-
-<?php
-
-$thetable = 'antennen_arte';
-$joins = array('antennen');
-
-//delete
-if (array_key_exists('delete', $_GET)) {
-	mr_deleteentry($thetable, $_GET['delete']);
-	mr_deletetweenentries($thetable, 'antennen_arte', $_GET['delete']);
-}
-
-
-//get data if id is given 
-if ( array_key_exists('edit_id', $_GET)) {
-		$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-} else {
-	$data = array();
-}
-
-
-
-echo "<section class='db-edit'>";
-if ( array_key_exists('action', $_GET)) {
-	switch ($_GET['action']) {
-		case 'saveedit':
-			saveit('',$thetable);
-			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-			editit($data, $thetable);
-		break;
-		case 'savenew':
-			saveit(mr_createentry($thetable), $thetable);
-			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-			editit($data, $thetable);
-		break;
-		case 'edit':
-			editit($data, $thetable);
-		break;
-		case 'new':
-			editit($data, $thetable);
-		break;
-		case 'uploadimage':
-			$data = data(array('table' => $thetable, 'joins' => $joins), array('ID' => $_GET['edit_id']), 1);
-			uploadit($data, $thetable);
-		break;
-	
-		default:
-			echo "<p>Wählen Sie einen Datensatz unten aus, oder kreieren Sie eine neue um diese dann hier zu bearbeiten.</p>";
-		break;
+	echo "<div style='clear:both'></div><br>";	
 	}
-}
-echo "</section>";
-
-
-
-
-
-//uploads
+	
+	the_form();
 
 
 //list
@@ -129,9 +49,7 @@ $constr = array(
 		)
 	
 );
-echo '<section class="dp-list">';
 mr_BuildListTable($data, $constr, $thetable);
-echo '</section>';
 
 
 include('devpress/footer.php'); ?>		

@@ -58,6 +58,7 @@ function editit($data){
 			$args = array(
 				'thetable' => $thetable,
 				'target_table' => 'antennen_arte',
+				'label' => 'Arte',
 				'target_col' => 'antennenart_name',
 				'target_col_label' => 'Art'
 			);

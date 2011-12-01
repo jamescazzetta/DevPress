@@ -1,0 +1,9 @@
+/* @override http://devpress.local/devpress/css/custom.css */
+form.editarea{
+	background-color:rgba(255,255,255,0.5);
+	margin:0px -25px 75px -25px;
+	padding:5px 25px;
+	border-top:1px solid #999;
+	border-bottom:1px solid #fff;
+	
+	}
