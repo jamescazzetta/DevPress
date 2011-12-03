@@ -93,7 +93,7 @@ function mr_deleteentry($table, $id){
 	$table = $GLOBALS['tableprefix']."_".$table;
 	mysql_query("DELETE FROM $table WHERE $table.id = $id");
 	
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$table</strong> were deleted.</p>", 3, "infos.log");
+	// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$table</strong> were deleted.</p>", 3, "infos.log");
 	
 }
 
@@ -106,7 +106,7 @@ function mr_deletetweenentries($table1, $table2, $id){
 	$tweentable = $tables[0].'2'.$tables[1];
 	
 	mysql_query("DELETE FROM $tweentable WHERE $table1.{$table1}_id = $id");
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$tweentable</strong> were deleted.</p>", 3, "infos.log");
+	// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$tweentable</strong> were deleted.</p>", 3, "infos.log");
 
 }
 
@@ -151,7 +151,7 @@ function mr_savetextfielddata($table, $col, $value, $id){
 	WHERE 0=0 $where";
 	mysql_query($sql);
 	
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$value</strong></p>", 3, "infos.log");
+	// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$value</strong></p>", 3, "infos.log");
 }
 
 //colorfield (self)
@@ -202,7 +202,7 @@ function mr_savetextareadata($table, $name, $newid = ''){
 	WHERE 0=0 $where";
 	mysql_query($sql);
 	
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$name</strong> updated to <strong>$_POST[$name]</strong></p>", 3, "infos.log");
+	// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$name</strong> updated to <strong>$_POST[$name]</strong></p>", 3, "infos.log");
 
 }
 
@@ -217,7 +217,7 @@ function mr_bool($data, $table, $col, $value = "Or", $trueval = "True", $falseva
 			//set it to TRUE
 			$sql = "UPDATE {$GLOBALS['tableprefix']}_$table SET $col=$_POST[$postname] WHERE id = $id";
 			mysql_query($sql);
-			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$_POST[$postname]</strong></p>", 3, "infos.log");
+			// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> field <strong>$table.$col</strong> updated to <strong>$_POST[$postname]</strong></p>", 3, "infos.log");
 			
 
 		}
@@ -345,14 +345,14 @@ function mr_savecheckboxes($sourcetable, $savetable, $values, $id){
 
 	//delete
 	mysql_query("DELETE FROM $tweentable WHERE {$prefix_sourcetable}_id = '$id'");
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$tweentable</strong> were deleted to make room.</p>", 3, "infos.log");
+	// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> All rows with id:<strong>$id</strong> from table <strong>$tweentable</strong> were deleted to make room.</p>", 3, "infos.log");
 
 	//insert new
 	foreach ($values as $item) {
 		$SQL = "INSERT INTO $tweentable ({$prefix_sourcetable}_id, {$prefix_savetable}_id) VALUES ('$id', '$item')";
 		$sq = mysql_query($SQL);
 		print mysql_error();
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> to table <strong>$tweentable</strong> added </p>", 3, "infos.log");	
+		// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Row <strong>$id</strong> to table <strong>$tweentable</strong> added </p>", 3, "infos.log");	
 	}
 };
 
@@ -413,7 +413,7 @@ function mr_saveparentselect($table, $newid){
 	WHERE id = $id";
 	mysql_query($sql);
 	
-	error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> {$GLOBALS['tableprefix']}_{$table} Parent_id with id $id changed to $_POST[parent_id]</p>", 3, "infos.log");
+	// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> {$GLOBALS['tableprefix']}_{$table} Parent_id with id $id changed to $_POST[parent_id]</p>", 3, "infos.log");
 }
 
 //images
