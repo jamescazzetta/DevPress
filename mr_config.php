@@ -2,12 +2,12 @@
 
 /* DB */
 $DB_HOST	= "localhost";
-$DB_BN		= "root";
-$DB_PW		= "metalgear3";
-$DB_DB		= "devpress2";
+$DB_BN		= "db131999_andenma";
+$DB_PW		= "giraffe33";
+$DB_DB		= "db131999_andenmatten";
 
 /* GLOBALS */
-$tableprefix = 'mr';
+$tableprefix = 'andenmatten';
 $root = 'http://devpress.local';
 $theme = 'franz';
 $themeindex = 'kunden.php';
