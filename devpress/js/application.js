@@ -144,8 +144,6 @@ $('document').ready(function() {
   /** 
    * Dynamically create colorpicker from inputfields with a class of colorpicker
    */
-
-
 // sets backgroundcolor value on load
 $('.colorpickerdisplay').each(function(){
 	$value = $(this).prev(".colorpickerinput").val();

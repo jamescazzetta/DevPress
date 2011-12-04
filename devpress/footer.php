@@ -47,5 +47,30 @@
 		<script src="../../devpress/js/jquery.utils.js"></script> <!-- colorpicker -->
 	    <script src="../../devpress/js/notifications.js"></script>
 	    <script src="../../devpress/js/application.js"></script>
+	
+
+	
+	<?php if ($build) { ?>
+		<script type="text/javascript" charset="utf-8">
+			new Notification('<strong>ERM Build</strong> is turned on and will slow down the system.', 'warning');
+		</script>
+	<?php  } ?>
+	<?php if ($_GET['action'] == "save") { ?>
+		<script type="text/javascript" charset="utf-8">
+			new Notification('Entrie ID <strong><?php echo $_GET['edit_id'] ?></strong> from table <strong><?php echo $thetable ?></strong> has been saved.', 'saved');
+		</script>
+	<?php  } ?>
+	<?php if ($_GET['action'] == "edit") { ?>
+		<script type="text/javascript" charset="utf-8">
+			new Notification('You are editing ID <strong><?php echo $_GET['edit_id'] ?></strong> from table <strong><?php echo $thetable ?></strong>.', 'information');
+		</script>
+	<?php  } ?>
+	<?php if ($_GET['action'] == "new") { ?>
+		<script type="text/javascript" charset="utf-8">
+			new Notification('You are creating a new entrie for the <?php echo $thetable ?></strong> table.', 'information');
+		</script>
+	<?php  } ?>
+	
+	
 	  </body>
 	</html>

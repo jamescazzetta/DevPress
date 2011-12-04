@@ -11,6 +11,7 @@ $tableprefix = 'andenmatten';
 $root = 'http://devpress.local';
 $theme = 'franz';
 $themeindex = 'kunden.php';
+$build = FALSE;
 
 $themeurl = $root . '/themes/' . $theme;
 $themeindexurl = $themeurl . '/' . $themeindex;

@@ -11,10 +11,10 @@ date_default_timezone_set('Europe/Zurich');
 
 include('../../mr_config.php');
 include('../../devpress/functions.php');
-include('../../devpress/erm_builder.php');
+if ($build) {include('../../devpress/erm_builder.php');}
+if ($build) {include('erm.php');}
 include('../../devpress/data_builder.php');
 include('../../devpress/form_builder.php');
-include('erm.php');
 ?>
 
 <!DOCTYPE html>
