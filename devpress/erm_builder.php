@@ -27,7 +27,7 @@ function set_table($args){
 					roworder INT
 				)";
 		mysql_query($sql);
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>Table <strong>$tablename</strong> created.</p>", 3, "infos.log");
+		// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>Table <strong>$tablename</strong> created.</p>", 3, "infos.log");
 	}
 	
 	//Hyrarchy change
@@ -41,7 +41,7 @@ function set_table($args){
 			$sql = "ALTER TABLE $tablename ADD children_ids INT Default '0'";			
 			mysql_query($sql);
 			
-			error_log( " <p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date>Table <strong>$tablename</strong> has changed its hyrarchical state to <strong>TRUE</strong>.</p>", 3, "infos.log");
+			// error_log( " <p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date>Table <strong>$tablename</strong> has changed its hyrarchical state to <strong>TRUE</strong>.</p>", 3, "infos.log");
 			
 		} else {
 			$sql = "ALTER TABLE $tablename DROP COLUMN parent_id";
@@ -50,7 +50,7 @@ function set_table($args){
 			$sql = "ALTER TABLE $tablename DROP COLUMN children_ids";
 			mysql_query($sql);
 			
-			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date> Table <strong>$tablename</strong> has changed its hyrarchical state to <strong>FALSE</strong>.</p>", 3, "infos.log");
+			// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date> Table <strong>$tablename</strong> has changed its hyrarchical state to <strong>FALSE</strong>.</p>", 3, "infos.log");
 		}
 	}
 	
@@ -113,7 +113,7 @@ function add_table_data($args){
 	$sql = "SELECT * FROM $tablename";
 	$result = mysql_query($sql);
 	if (!$result){
-		error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to add data to table, but Table \'{<strong>$tablename</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
+		// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to add data to table, but Table \'{<strong>$tablename</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
 		return;
 	};
 	switch ($args['relation']) {
@@ -137,13 +137,13 @@ function add_table_data($args){
 				$sql = "ALTER TABLE $tablename MODIFY $args[self_name] $args[self_definition]";
 				mysql_query($sql);
 				
-				error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date> update <strong>$tablename.$args[self_name]</strong> fieldtype from <strong>$currenttype</strong> to <strong>$args[self_definition]</strong> </p>", 3, "infos.log");
+				// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date> update <strong>$tablename.$args[self_name]</strong> fieldtype from <strong>$currenttype</strong> to <strong>$args[self_definition]</strong> </p>", 3, "infos.log");
 			}
 		} else {
 			//add the column
 			$sql = "ALTER TABLE $tablename ADD $args[self_name] $args[self_definition]";
 			mysql_query($sql);
-			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> added <strong>$tablename.$args[self_name]</strong> with fieldtype <strong>$args[self_definition]</strong></p>", 3, "infos.log");
+			// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> added <strong>$tablename.$args[self_name]</strong> with fieldtype <strong>$args[self_definition]</strong></p>", 3, "infos.log");
 		};
 	break;
 	
@@ -152,7 +152,7 @@ function add_table_data($args){
 		$sql = "SELECT * FROM $target ";
 		$exists = mysql_query($sql);
 		if (!$exists){
-			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to add the connection id to a s2m table, but Table \'{<strong>$target</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
+			// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to add the connection id to a s2m table, but Table \'{<strong>$target</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
 			return;
 		} 
 		//check if the table_id is already in target_table
@@ -175,7 +175,7 @@ function add_table_data($args){
 		$sql = "SELECT * FROM $target ";
 		$exists = mysql_query($sql);
 		if (!$exists){
-			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to add the connection id to a s2m table, but Table \'{<strong>$target</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
+			// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to add the connection id to a s2m table, but Table \'{<strong>$target</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
 			return;
 		} 
 		//check if the table_id is already in the table
@@ -198,7 +198,7 @@ function add_table_data($args){
 		$sql = "SELECT * FROM $target ";
 		$exists = mysql_query($sql);
 		if (! $exists ){
-			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to adda connection to an m2m table, but Table \'{<strong>$target</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
+			// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date>System tried to adda connection to an m2m table, but Table \'{<strong>$target</strong>}\'does not exist! add the Table first with the set_table() function</p>", 3, "infos.log");
 			return;
 		}
 		//is there a tweentable already?
@@ -215,7 +215,7 @@ function add_table_data($args){
 					)";
 				
 			mysql_query($sql);
-			error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Table <strong>$tween</strong> created.</p>", 3, "infos.log");
+			// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> Table <strong>$tween</strong> created.</p>", 3, "infos.log");
 		}
 	break;
 	}
