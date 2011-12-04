@@ -7,6 +7,7 @@
 include('plugins/upload.php');
 
 $root = 'devpress.local';
+date_default_timezone_set('Europe/Zurich');
 
 include('../../mr_config.php');
 include('../../devpress/functions.php');

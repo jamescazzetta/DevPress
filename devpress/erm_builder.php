@@ -3,7 +3,6 @@
 // = CRM Builder =
 // ===============
 
-
 function set_table($args){
 	//DEFAULTS
 	if (! array_key_exists('table_data'		, $args)) { $args['table_data'] = array();}
