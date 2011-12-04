@@ -155,9 +155,38 @@ function mr_savetextfielddata($table, $col, $value, $id){
 }
 
 //colorfield (self)
-function mr_colorfield($data = '', $table, $col, $label){	
-	return mr_textfield($data, $table, $col, $label, ' class="colorpickerinput" ');
-}
+function mr_colorfield($data = '', $table, $col, $label, $customattr = '', $type = 'text'){	
+	global $globalid;
+	// data has been submited
+	if ($_POST) {
+		$id = ($_GET['edit_id'] == 0 ? $globalid : $data['id']);
+		$postname = ($_GET['edit_id'] == 0 ? "field_{$col}_new" : "field_{$col}_{$id}");
+		if (array_key_exists($postname,$_POST)) {
+			mr_savetextfielddata($table, $col, $_POST[$postname], $id);
+		}
+		$postname = "field_{$col}_{$id}";
+		$data = data(array('table' => $table), array('ID' => $id), 1);
+		$value = $data[$col];
+	
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
+		$id = 'new';
+		$postname = "field_{$col}_{$id}";
+		$value = '';
+
+	// no data has been submited (just edit opened)
+	} else {
+		$id = $data['id'];
+		$postname = "field_{$col}_{$id}";
+		$value = $data[$col];
+	}
+	
+	$return = "<label for='$postname'>$label<small>The username must consist of at least 3 characters</small></label>";
+	$return .= "<div class='colorpickerwrapper'><input id='$postname' type='$type' name='$postname' value='$value' class='colorpickerinput'><div class='colorpickerdisplay'>&nbsp;</div></div>";
+	
+	return $return;
+	
+}	
 
 //textarea (self)
 function mr_textarea($data = '', $table, $col, $label, $customattr = '', $rows = 5, $cols = 20){
@@ -534,7 +563,9 @@ function multigroup($args, $data){
 	
 	//preview existing fields
 	if (array_key_exists($targettable, $data)) {
-		foreach ($data[$targettable] as $multigroup_array) {
+		
+		$last_key = end(array_keys($data[$targettable]));
+		foreach ($data[$targettable] as $key => $multigroup_array) {
 			$return .= '<div class="multigroup_item">';
 			foreach ($args['target_cols'] as $colname => $inputtype) {
 				switch ($inputtype) {
@@ -556,7 +587,10 @@ function multigroup($args, $data){
 				}
 			}
 			$return .= '<input type="hidden" name="multigroup_remove" value="'.$targetdata['id'].'" />';
-			$return .=  "<input type='submit' name='".$args['target_table']."' value='-' class='plus'> Entfernen";	
+			if ($key == $last_key) {	
+					$return .=  "<input type='submit' name='".$args['target_table']."' value='-' class='plus'> Entfernen";	
+			}
+			
 
 			$return .= '</div>';
 			

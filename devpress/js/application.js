@@ -140,4 +140,35 @@ $('document').ready(function() {
   
   initBackground();
   
+
+  /** 
+   * Dynamically create colorpicker from inputfields with a class of colorpicker
+   */
+
+
+// sets backgroundcolor value on load
+$('.colorpickerdisplay').each(function(){
+	$value = $(this).prev(".colorpickerinput").val();
+	$(this).css('backgroundColor', '#' + $value);
+});
+
+//colorpicker function
+$('.colorpickerdisplay').ColorPicker({
+	color: $(this).prev(".colorpickerinput").val(),
+	onShow: function (colpkr, hex, el) {
+		$(colpkr).fadeIn(500);
+		$(el).prev(".colorpickerinput").val(hex);
+		return false;
+	},
+	onSubmit: function(hsb, hex, rgb, el) {
+		$(el).css('backgroundColor', '#' + hex);
+		$(el).prev(".colorpickerinput").val(hex);
+	},
+	onHide: function (colpkr, el) {
+		$(colpkr).fadeOut(500);
+		return false;
+	}
+});
+
+
 });

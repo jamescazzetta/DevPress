@@ -30,6 +30,7 @@ include('erm.php');
     <link rel="stylesheet" href="devpress/css/checkboxes.css" />
     <link rel="stylesheet" href="devpress/css/inputtags.css" />
     <link rel="stylesheet" href="devpress/css/main.css" />
+	<link rel="stylesheet" href="devpress/css/colorpicker.css" />
 	<link rel="stylesheet" href="devpress/css/custom.css" />
     
     <!--[if lt IE 9]>

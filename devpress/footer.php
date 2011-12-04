@@ -42,6 +42,9 @@
 	    <script src="devpress/js/jquery.wymeditor.js"></script>
 	    <script src="devpress/js/jquery.validate.js"></script>
 	    <script src="devpress/js/jquery.inputtags.js"></script>
+		<script src="devpress/js/jquery.colorpicker.js"></script>
+		<script src="devpress/js/jquery.eye.js"></script> <!-- colorpicker -->
+		<script src="devpress/js/jquery.utils.js"></script> <!-- colorpicker -->
 	    <script src="devpress/js/notifications.js"></script>
 	    <script src="devpress/js/application.js"></script>
 	  </body>
