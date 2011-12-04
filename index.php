@@ -1,4 +1,5 @@
 <?php
-	header('Location: antennen.php');
+include("mr_config.php");
+header('Location: '.$themeindexurl);
 
 ?>

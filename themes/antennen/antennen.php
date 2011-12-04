@@ -5,7 +5,7 @@ $thename_sing = 'Antenne';
 $filename = 'antennen.php';
 $joins = array('antennen_bauformen', 'farben', 'antennen_materialien', 'antennen_arte');
 
-include('devpress/header.php'); 
+include('../../devpress/header.php'); 
 include('nav.php'); 
 
 
@@ -151,4 +151,4 @@ $constr = array(
 );
 mr_BuildListTable($data, $constr, $thetable);
 
-include('devpress/footer.php'); ?>		
+include('../../devpress/footer.php'); ?>		

@@ -252,8 +252,8 @@ function mr_bool($data, $table, $col, $value = "Or", $trueval = "True", $falseva
 		}
 		$postname = "field_{$col}_{$id}";
 		$data = data(array('table' => $table), array('ID' => $id), 1);
-		$truechecked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
-		$falsechecked = ($data['outdoor'] == FALSE ? 'CHECKED' : '');
+		$truechecked = ($data[$col] == TRUE ? 'CHECKED' : '');
+		$falsechecked = ($data[$col] == FALSE ? 'CHECKED' : '');
 	// no data has been submited (just new one opened)
 	} elseif (isset($_GET['action']) && $_GET['action'] == 'new') {
 		$id = 'new';
@@ -265,8 +265,8 @@ function mr_bool($data, $table, $col, $value = "Or", $trueval = "True", $falseva
 	} else {
 		$id = $data['id'];
 		$postname = "field_{$col}_{$id}";
-		$truechecked = ($data['outdoor'] == TRUE ? 'CHECKED' : '');
-		$falsechecked = ($data['outdoor'] == FALSE ? 'CHECKED' : '');
+		$truechecked = ($data[$col] == TRUE ? 'CHECKED' : '');
+		$falsechecked = ($data[$col] == FALSE ? 'CHECKED' : '');
 	}
 		
 		

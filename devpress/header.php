@@ -6,11 +6,13 @@
 //plugins
 include('plugins/upload.php');
 
-include('mr_config.php');
-include('functions.php');
-include('erm_builder.php');
-include('data_builder.php');
-include('form_builder.php');
+$root = 'devpress.local';
+
+include('../../mr_config.php');
+include('../../devpress/functions.php');
+include('../../devpress/erm_builder.php');
+include('../../devpress/data_builder.php');
+include('../../devpress/form_builder.php');
 include('erm.php');
 ?>
 
@@ -23,15 +25,15 @@ include('erm.php');
 
     <title>Admin Control Panel</title>
 
-    <link rel="stylesheet" href="devpress/css/reset.css" />
-    <link rel="stylesheet" href="devpress/css/visualize.css" />
-    <link rel="stylesheet" href="devpress/css/datatables.css" />
-    <link rel="stylesheet" href="devpress/css/buttons.css" />
-    <link rel="stylesheet" href="devpress/css/checkboxes.css" />
-    <link rel="stylesheet" href="devpress/css/inputtags.css" />
-    <link rel="stylesheet" href="devpress/css/main.css" />
-	<link rel="stylesheet" href="devpress/css/colorpicker.css" />
-	<link rel="stylesheet" href="devpress/css/custom.css" />
+    <link rel="stylesheet" href="../../devpress/css/reset.css" />
+    <link rel="stylesheet" href="../../devpress/css/visualize.css" />
+    <link rel="stylesheet" href="../../devpress/css/datatables.css" />
+    <link rel="stylesheet" href="../../devpress/css/buttons.css" />
+    <link rel="stylesheet" href="../../devpress/css/checkboxes.css" />
+    <link rel="stylesheet" href="../../devpress/css/inputtags.css" />
+    <link rel="stylesheet" href="../../devpress/css/main.css" />
+	<link rel="stylesheet" href="../../devpress/css/colorpicker.css" />
+	<link rel="stylesheet" href="../../devpress/css/custom.css" />
     
     <!--[if lt IE 9]>
     <link rel="stylesheet" href="css/ie.css" />
