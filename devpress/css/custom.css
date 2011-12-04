@@ -1,3 +1,5 @@
+/* @override http://devpress.local/devpress/css/custom.css */
+
 .colorpickerwrapper{
 	position: relative;
 }
@@ -22,9 +24,35 @@ form.editarea{
 
 .multigroup_item{
 	background-color: #e8e8e8;
-	padding: 5px;
+	padding: 5px 5px 5px 5px;
 	border-radius:5px;
 	margin-bottom: 10px;
 	margin-left: 0px;
 	border: 1px solid #aaa;
+}
+
+form div.multigroup_item > div {
+color: #404040;
+font-size: 11px;
+margin-left: 35%;
+position: relative;
+}
+
+form div.multigroup_item > label {
+color: #404040;
+float: left;
+font-size: 10px;
+font-weight: bold;
+margin-right: 5%;
+margin-top: 2px;
+text-transform: uppercase;
+width: 30%;
+	}
+	
+.multigroup_item .plus{
+	margin: 5px 0px 7px 0;
+}
+
+#mg_add.plus{
+	margin: 5px 0px 7px 0;
 }

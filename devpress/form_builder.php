@@ -111,7 +111,7 @@ function mr_deletetweenentries($table1, $table2, $id){
 }
 
 //textfield (self)
-function mr_textfield($data = '', $table, $col, $label, $customattr = '', $type = 'text'){
+function mr_textfield($data = '', $table, $col, $label, $customattr = '', $type = 'text', $smalltext = ""){
 	global $globalid;
 	// data has been submited
 	if ($_POST) {
@@ -137,7 +137,7 @@ function mr_textfield($data = '', $table, $col, $label, $customattr = '', $type 
 		$value = $data[$col];
 	}
 	
-	$return = "<label for='$postname'>$label<small>The username must consist of at least 3 characters</small></label>";
+	$return = "<label for='$postname'>$label<small>$smalltext</small></label>";
 	$return .= "<div><input id='$postname' type='$type' name='$postname' value='$value' $customattr></div>";
 	
 	return $return;
@@ -155,7 +155,7 @@ function mr_savetextfielddata($table, $col, $value, $id){
 }
 
 //colorfield (self)
-function mr_colorfield($data = '', $table, $col, $label, $customattr = '', $type = 'text'){	
+function mr_colorfield($data = '', $table, $col, $label, $customattr = '', $type = 'text', $smalltext = ""){	
 	global $globalid;
 	// data has been submited
 	if ($_POST) {
@@ -181,7 +181,7 @@ function mr_colorfield($data = '', $table, $col, $label, $customattr = '', $type
 		$value = $data[$col];
 	}
 	
-	$return = "<label for='$postname'>$label<small>The username must consist of at least 3 characters</small></label>";
+	$return = "<label for='$postname'>$label<small>$smalltext</small></label>";
 	$return .= "<div class='colorpickerwrapper'><input id='$postname' type='$type' name='$postname' value='$value' class='colorpickerinput'><div class='colorpickerdisplay'>&nbsp;</div></div>";
 	
 	return $return;
@@ -588,7 +588,7 @@ function multigroup($args, $data){
 			}
 			$return .= '<input type="hidden" name="multigroup_remove" value="'.$targetdata['id'].'" />';
 			if ($key == $last_key) {	
-					$return .=  "<input type='submit' name='".$args['target_table']."' value='-' class='plus'> Entfernen";	
+					$return .=  "<label for='".$args['target_table']."_".$key."'> Entfernen <small>Änderungen werden gespeichert!</small></label><div><input id='".$args['target_table']."_".$key."' type='submit' name='".$args['target_table']."' value='-' class='plus'></div>";	
 			}
 			
 
@@ -599,7 +599,7 @@ function multigroup($args, $data){
 	if ($_GET['action'] == 'new') {
 		$return .= "Das Multigroup Module wird nach dem Speichern aktiviert";
 	} else {
-		$return .=  "<input type='submit' name='".$args['target_table']."' value='+' class='plus'> Hinzufügen";	
+		$return .=  "<label for='mg_add'> Hinzufügen <small>Änderungen werden gespeichert!</small></label><div><input type='submit' name='".$args['target_table']."' id='mg_add' value='+' class='plus'></div>";	
 	}
 	return $return;
 }
