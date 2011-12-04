@@ -85,6 +85,8 @@ function editit($data){
 	the_form();
 
 
+echo "TESTING OUT AUTOMATIC PULLS";
+
 //list
 $data = data(array('table' => $thetable, $joins));
 $constr = array(
