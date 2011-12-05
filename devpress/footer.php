@@ -7,6 +7,7 @@
 
 	<div class="debug">
 	<?php
+	
 	/*
 		echo '<h1>$_POST</h1><textarea cols="50" rows="40">';
 		print_r($_POST);
