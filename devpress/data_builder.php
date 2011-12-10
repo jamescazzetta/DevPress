@@ -59,41 +59,20 @@ function data($args, $filters = array(), $single = ''){
 				$joinname = $GLOBALS['tableprefix'] . '_' . $join;
 				//get targetfields
 				$targetfields = mysql_fetch_fields($joinname); //retrieve targetfields			
-
 				//test if it is m2s
 				if (array_key_exists($joinname . '_id', $tablefields)) {
-			
-					// loop through the table item and retrieve connection id
-					$sql2 = " SELECT {$joinname}_id as 'join_id' FROM $tablename WHERE {$joinname}_id = $table_data[id] /*ORDER BY $joinname.roworder DESC*/";
-					$result = mysql_query($sql2) or trigger_error("SQL", E_USER_ERROR);
-			 		while ($temp_sql = mysql_fetch_array($result)) { 
-						if ($temp_sql['join_id']) { //check if this row even has a connection
+					// get the join id
 					
-							// retrieve all the fields for select so that no repetitions from other tables occure
-							$targetfield_names = array();
-							foreach ($targetfields as $targetfield) {$targetfield_names[] = $joinname . '.' . $targetfield->name;}
-							$selects = implode(", ", $targetfield_names);
-			
-							$sql_sub = " SELECT $selects FROM $joinname JOIN $tablename ON $tablename.{$joinname}_id = $joinname.{$joinname}_id WHERE $joinname.{$joinname}_id = $temp_sql[join_id] ORDER BY $joinname.roworder DESC";
-							$result = mysql_query($sql_sub) or trigger_error("SQL", E_USER_ERROR);
-							$i = 0;
-							
-							while ($join_sql = mysql_fetch_array($result)) { // loop through the target rows								
-								foreach ($targetfields as $key => $targetfield) {
-									
-									
-									if ($single) {
-										$data[$joinname][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
-									} else {
-										$data[$table_data['id']][$joinname][$i][$targetfield->name] = $join_sql[$targetfield->name];	//add to data
-									}
-								}
-								$i++;
-						
-						
-							}
-			
-						}
+					$sql2 = " SELECT {$joinname}_id as 'join_id' FROM $tablename WHERE id = $table_data[id]";
+					$result = mysql_query($sql2) or trigger_error("SQL", E_USER_ERROR);
+			 		$theresult = mysql_fetch_array($result);
+					$join_id = $theresult['join_id'];
+
+					
+					//add the fields of the join to the data array
+					if ($join_id) { //check if this row even has a connection
+							$joindata = data(array('table' => $join), array('ID' => $join_id), 1);
+							$data[$joinname] = $joindata;
 					}
 				
 				//test if is s2m

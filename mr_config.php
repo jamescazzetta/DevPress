@@ -13,8 +13,8 @@ $theme = 'franz';
 $themeindex = 'kunden.php';
 $build = FALSE;
 
-$themeurl = $root . '/themes/' . $theme;
-$themeindexurl = $themeurl . '/' . $themeindex;
+$backendurl = $root . '/backend/' . $theme;
+$themeindexurl = $backendurl . '/' . $themeindex;
 
 //MySQL connect
 $con = mysql_connect($DB_HOST, $DB_BN, $DB_PW);

@@ -114,7 +114,7 @@ function mr_deletetweenentries($table1, $table2, $id){
 function mr_textfield($data = '', $table, $col, $label, $customattr = '', $type = 'text', $smalltext = ""){
 	global $globalid;
 	// data has been submited
-	if ($_POST) {
+	if ($_POST && !array_key_exists('uploadsubmit' ,$_POST)) {
 		$id = ($_GET['edit_id'] == 0 ? $globalid : $data['id']);
 		$postname = ($_GET['edit_id'] == 0 ? "field_{$col}_new" : "field_{$col}_{$id}");
 		if (array_key_exists($postname,$_POST)) {
@@ -130,14 +130,17 @@ function mr_textfield($data = '', $table, $col, $label, $customattr = '', $type 
 		$postname = "field_{$col}_{$id}";
 		$value = '';
 
+	
 	// no data has been submited (just edit opened)
 	} else {
 		$id = $data['id'];
 		$postname = "field_{$col}_{$id}";
 		$value = $data[$col];
 	}
-	
-	$return = "<label for='$postname'>$label<small>$smalltext</small></label>";
+	$return = '';
+	if ($type != 'hidden') {
+		$return .= "<label for='$postname'>$label<small>$smalltext</small></label>";
+	}
 	$return .= "<div><input id='$postname' type='$type' name='$postname' value='$value' $customattr></div>";
 	
 	return $return;
@@ -640,9 +643,88 @@ function mr_select($args, $data){
 
 
 
+//image for imagedb (m2m)
+/*
+	$args = array(
+		'thetable' => 'materialien',
+		'label' => 'Farben',
+		'smalltext' => 'instructional text here',
+		);
+*/
+function mr_image($args, $data){
+	global $globalid;
+	global $root;
+	$return = '';
+
+	
+	$colname = "field_".$GLOBALS['tableprefix'] . "_mediadb_id_".$globalid;
+	if (array_key_exists($colname,$_POST)) {
+		if ($_POST[$colname] == '-') {
+			mysql_query("UPDATE $args[thetable] SET {$GLOBALS['tableprefix']}_mediadb_id = 0 WHERE id = $globalid LIMIT 1");			
+			$data[$GLOBALS['tableprefix'] . '_mediadb_id'] = '';
+			unset($data[$GLOBALS['tableprefix'] . '_mediadb']);
+
+		}
+	}
+	//remove image
+	
+	
+	
+	// A new image was added by the uploader
+	if (array_key_exists('uploadsubmit', $_POST)){ 
+		$return .= "<label>$args[label]<small>This Image will not be added until the changes have been saved!</small></label><div>";
+		
+		$count = $_POST['uploader_count'];
+		for ($i=0; $i < $count; $i++) { 
+			$tmpname = $_POST['uploader_'.$i.'_tmpname'];
+			$name = $_POST['uploader_'.$i.'_name'];
+			$status = $_POST['uploader_'.$i.'_status'];
+			$newid = $_POST['uploader_'.$i.'_id'];
+		}
+		$return .= "<img src='$root/devpress/uploads/".$tmpname. "' style='max-width:40px;max-height:40px;' />";
+		$return .= "<h3>" . $name . "</h3>";
+		//add new data to the data array
+		$data[$GLOBALS['tableprefix'] . '_mediadb_id'] = $newid;
+
+		
+		$return .= mr_textfield($data, $args['thetable'], $GLOBALS['tableprefix'] . '_mediadb_id', '', '', $type = 'hidden', '');
+	
+	
+	} else {
+	//all normal
+		$return .= "<label>$args[label]<small>$args[smalltext]</small></label><div>";
+		
+		if (array_key_exists($GLOBALS['tableprefix'] . '_mediadb', $data)) {
+			$imagedata = $data[$GLOBALS['tableprefix'] . '_mediadb'];
+		} else {
+			$imagedata = FALSE;
+		}
+		// 1. check if image is present and preview them 
+		if ($imagedata) {
+			$return .= "<img src='$root/devpress/uploads/".$imagedata['tmpname'] . "' style='max-width:40px;max-height:40px;' />";
+			$return .= "<h3>" . $imagedata['name'] . "</h3>";
+			$return .= mr_textfield($data, $args['thetable'], $GLOBALS['tableprefix'] . '_mediadb_id', '', '', $type = 'hidden', '');
+			$return .= "<input type='submit' value='-' name='field_".$GLOBALS['tableprefix'] . "_mediadb_id_".$globalid."'>Remove Image";
+		} else {
+			$return .= "<a class='fancybox fancybox.iframe' href='uploader.php?parent_uri=".$_SERVER['REQUEST_URI']."'>Add Image</a>";
+		}
+		$return .= "</div>";
+		
+	}
+
+				
+				
+				
+		
+	return $return;
+}
+
+
+
 //arvhivelist
 function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 	$return  = '';
+	global $root;
 	foreach ($data as $key => $dataitem) {
 		//loop through all root items
 
@@ -674,8 +756,16 @@ function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 					case 'image':
 						$return .= "<td>" . ($dataitem['bild'] ? "<img src='" . $dataitem['bild'] . "' alt='image' />" : 'empty')."</td>";
 					break;
+					case 'filepreview':
+						$ext = pathinfo($dataitem[$col['name']], PATHINFO_EXTENSION);
+						if ($ext == 'png' || $ext == 'jpg') {
+							$return .= "<td><img src='" . $root . '/devpress/uploads/' . $dataitem[$col['name']] . "' alt='image' style='max-height:50px;max-width:50px;' /></td>";
+						} else {
+							$return .= "<td>No preview possible.</td>";
+						}
+					break;
 					default:
-						$return .= "<td>" /*. $dataitem[$col['name']]*/ . "</td>";
+						$return .= "<td>". $dataitem[$col['name']] . "</td>";
 					break;
 				}
 			}		

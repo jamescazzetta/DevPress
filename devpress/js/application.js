@@ -169,4 +169,8 @@ $('.colorpickerdisplay').ColorPicker({
 });
 
 
+
+//Fancybox function
+		$(".fancybox").fancybox();
+
 });
