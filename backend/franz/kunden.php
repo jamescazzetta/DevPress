@@ -42,7 +42,7 @@ function editit($data){
 			echo mr_bool($data, $thetable, 'active', 'Aktive?', 'Ja', 'Nein');
 		echo "</section>";
 		echo "<section>";
-			echo mr_textarea($data, $thetable, 'informationen', 'Informationen');
+			echo mr_textarea($data, $thetable, 'informationen', 'Informationen', 'class="tags"');
 		echo "</section>";
 		echo "<section>";
 			echo mr_textfield($data, $thetable, 'roworder', 'Ordnung', '', 'number');
