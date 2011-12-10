@@ -28,7 +28,13 @@
        	Media
       </a>
     </li>
-       
+	<li <?php echo ($thetable == "navigation" ? 'class="current"': '' ); ?> >
+      <a href="navigation.php">
+        <span class="icon chart"></span>
+        <span class="badge">4</span>
+        Navigation
+      </a>
+    </li>
   </ul>
 
   <input type="text" id="search" placeholder="Realtime search..." />

@@ -38,17 +38,25 @@ function set_table($args){
 			$sql = "ALTER TABLE $tablename ADD parent_id INT Default '0'";
 			mysql_query($sql);
 			
-			$sql = "ALTER TABLE $tablename ADD children_ids INT Default '0'";			
+			$sql = "ALTER TABLE $tablename ADD lineage VARCHAR(250) Default '0'";
 			mysql_query($sql);
+			
+			$sql = "ALTER TABLE $tablename ADD deep INT Default '0'";
+			mysql_query($sql);
+			
 			
 			// error_log( " <p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date>Table <strong>$tablename</strong> has changed its hyrarchical state to <strong>TRUE</strong>.</p>", 3, "infos.log");
 			
 		} else {
 			$sql = "ALTER TABLE $tablename DROP COLUMN parent_id";
 			mysql_query($sql);
-		
-			$sql = "ALTER TABLE $tablename DROP COLUMN children_ids";
+			
+			$sql = "ALTER TABLE $tablename DROP COLUMN lineage";
 			mysql_query($sql);
+			
+			$sql = "ALTER TABLE $tablename DROP COLUMN deep";
+			mysql_query($sql);
+			
 			
 			// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y G:i:s') . "]</date> Table <strong>$tablename</strong> has changed its hyrarchical state to <strong>FALSE</strong>.</p>", 3, "infos.log");
 		}

@@ -16,12 +16,12 @@ function editit($data){
 	
 
 		echo "<section>";
-			echo mr_textfield($data, $thetable, 'name', 'art', ' autofocus="autofocus" ');
+			echo mr_textfield($data, $thetable, 'name', 'Name', ' autofocus="autofocus" ');
 		echo "</section>";
 		echo "<section>";
 			$args = array(
-				"table" => "kunden",
-				"original_table" => $thetable,
+				"thetable" => $thetable,
+				"target_table" => "kunden",
 				"label" => "Verknüpfte Kunden",
 				"colvalues" => array("nachname", "vorname"),
 				"valueseperation" => " "
@@ -44,7 +44,7 @@ $data = data(array('table' => $thetable, 'joins' => $joins));
 $constr = array(
 	1 => array(
 			'name' => 'name',
-			'title' => 'arten',
+			'title' => 'Name',
 			'type' => 'title'
 		)
 	

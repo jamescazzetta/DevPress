@@ -21,15 +21,15 @@
         Antennen Bauformen
       </a>
     </li>
-<!--
-    <li>
-      <a href="/charts">
+
+    <li <?php echo ($thetable == "navigation" ? 'class="current"': '' ); ?> >
+      <a href="navigation.php">
         <span class="icon chart"></span>
         <span class="badge">4</span>
-        Charts
+        Navigation
       </a>
     </li>
-    
+<!--
     <li>
       <a href="/notifications">
         <span class="icon modal"></span>

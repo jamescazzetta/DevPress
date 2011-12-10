@@ -76,11 +76,27 @@ $args = array(
 );
 add_table_data($args);
 
+$args = array(
+	'table' => 'kunden',
+	'relation' => 'self',
+	'self_name' => 'farbe',
+	'self_definition' => 'varchar(255)'
+);
+add_table_data($args);
+
 // mediadb
 $args = array(
 	'table' => 'kunden',
 	'relation' => 'm2s',
 	'target' => 'mediadb'
+);
+add_table_data($args);
+
+// navigation
+$args = array(
+	'table' => 'kunden',
+	'relation' => 'm2m',
+	'target' => 'navigation'
 );
 add_table_data($args);
 
@@ -101,22 +117,23 @@ $args = array(
 );
 add_table_data($args);
 
-// ===========
-// = Bauformen =
-// ===========
+// ==============
+// = Navigation =
+// ==============
 $args = array(
-	'name' => 'antennen_bauformen',
+	'name' => 'navigation',
 	'hyrarchical' => TRUE,
 );
 set_table($args);
 
 $args = array(
-	'table' => 'antennen_bauformen',
+	'table' => 'navigation',
 	'relation' => 'self',
-	'self_name' => 'bauform_name',
+	'self_name' => 'name',
 	'self_definition' => 'varchar(255)'
 );
 add_table_data($args);
+
 
 // ==========
 // = Status =
@@ -143,6 +160,14 @@ $args = array(
 	'hyrarchical' => FALSE,
 );
 set_table($args);
+
+$args = array(
+	'table' => 'rechnungen',
+	'relation' => 'self',
+	'self_name' => 'farbe',
+	'self_definition' => 'varchar(255)'
+);
+add_table_data($args);
 
 $args = array(
 	'table' => 'rechnungen',

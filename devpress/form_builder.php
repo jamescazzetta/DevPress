@@ -1,7 +1,8 @@
 <?php
 
-
-
+// ================
+// = Form Masters =====================================================================================
+// ================
 function the_form(){
 	global $thetable;
 	global $joins;
@@ -69,6 +70,10 @@ function mr_endform($data, $args = array(
 	return $return;
 }
 
+
+// ===========
+// = Buttons ======================================================================================
+// ===========
 function mr_submitbutton($value){
 	return "<input type='submit' name='submit' value='$value' class='button primary submit icon approve'>";
 }
@@ -88,7 +93,9 @@ function mr_tf_published($value, $trueval = "public", $falseval = "hidden"){
 }
 
 
-
+// ==========
+// = Delete ======================================================================================
+// ==========
 function mr_deleteentry($table, $id){
 	$table = $GLOBALS['tableprefix']."_".$table;
 	mysql_query("DELETE FROM $table WHERE $table.id = $id");
@@ -110,6 +117,10 @@ function mr_deletetweenentries($table1, $table2, $id){
 
 }
 
+
+// ================================
+// = Textfield / Area / Colorfield======================================================================================
+// ================================
 //textfield (self)
 function mr_textfield($data = '', $table, $col, $label, $customattr = '', $type = 'text', $smalltext = ""){
 	global $globalid;
@@ -238,7 +249,12 @@ function mr_savetextareadata($table, $name, $newid = ''){
 
 }
 
-//boll
+
+
+
+// ========
+// = Bool ======================================================================================
+// ========
 function mr_bool($data, $table, $col, $value = "Or", $trueval = "True", $falseval = "False"){
 	global $globalid;
 	// data has been submited
@@ -281,27 +297,36 @@ function mr_bool($data, $table, $col, $value = "Or", $trueval = "True", $falseva
 	return $return;
 }
 
+
+
+
+
+// ==============
+// = Checkboxes ======================================================================================
+// ==============
+
 $args = array(
-	"table" => "antennen_materialien",
-	"original_table" => "antennen",
+	"thetable" => "antennen",
+	"target_table" => "antennen_materialien",
 	"label" => "Materialien", //just for presentation
 	"colvalues" => array("materialien_name"), //just for presentation
 	"valueseperation" => " ", //just for presentation
 	"parent_id" => "" //used by the function
 );
+
 //checkboxes (m2m) (possibly s2m)
 function mr_checkboxes($args, $data){
-	
-	$target_table = $GLOBALS['tableprefix'].'_'.$args["table"];	
+
+	$target_table = $GLOBALS['tableprefix'].'_'.$args["target_table"];	
 	
 	// data has been submited		
 	if ($_POST) {
 		$id = $data['id'];
 		$postname = $target_table;
 		if (array_key_exists($postname,$_POST)) {
-			mr_savecheckboxes($args['original_table'], $args['table'] , $_POST[$postname], $id);
+			mr_savecheckboxes($args['thetable'], $args['target_table'] , $_POST[$postname], $id);
 		}
-		$data = data(array('table' => $args["original_table"], 'joins' => array($args['table'])), array('ID' => $data['id']), 1);
+		$data = data(array('table' => $args["thetable"], 'joins' => array($args['target_table'])), array('ID' => $data['id']), 1);
 	
 	// no data has been submited (just new one opened)
 	} elseif ($_GET['action'] == 'new') {
@@ -328,13 +353,14 @@ function mr_checkboxes($args, $data){
 		$selected = array();
 	}
 	
-	$connectiondata = data( array("table" => $args["table"]),  array("parent_id" => $args["parent_id"]) );
+	$connectiondata = data( array("table" => $args["target_table"]),  array("parent_id" => $args["parent_id"]) );
+
 	$isroot = FALSE;
 	if ($args['parent_id'] == 'root') {
 		$isroot = TRUE;
 	}
-		//if ($isroot) {$return .= "<label>$args[label]</label>";}
-		$return .= "<label>$args[label]</label><div>";
+		if ($isroot) {$return .= "<label>$args[label]</label><div>";}
+		//$return .= "<label>$args[label]</label><div>";
 		if (!empty($connectiondata)) {$return .= "<ul class='".($isroot ? 'parent' : 'child')."'>";} else {return;}
 		foreach ($connectiondata as $key => $value) {
 			
@@ -350,15 +376,15 @@ function mr_checkboxes($args, $data){
 			$return .= "<label for='{$target_table}_{$value['id']}' >$inputtxt</label>";
 			
 			//children
-			if (has_children($args['table'],$value['id'])) {
+			if (has_children($args['target_table'],$value['id'])) {
 				$args['parent_id'] = $value['id'];
 				$return .= mr_checkboxes($args, $data );
 			}
 			
 			$return .= "</li>";
 		}
-		$return .= "</ul></div>";
-	
+		$return .= "</ul>";
+		if ($isroot) {$return .= "</div>";}
 	return $return;
 }
 
@@ -389,127 +415,183 @@ function mr_savecheckboxes($sourcetable, $savetable, $values, $id){
 };
 
 
+
+
+// ===========
+// = Selects ======================================================================================
+// ===========
 //parentselect (self)
 /*
 $args = array(
-	'table' => '',
+	'thetable' => '',
 	'label' => 'Label',
 	'colvalues' => array("name"),
 	'valueseperation' => " "
 )	
-	
-	
 */
 function mr_parentselect($args, $data){
+	global $globalid;
+
+	$postname = $GLOBALS['tableprefix']."_".$args["thetable"]."_parent_id";
+	// data has been submited
+	// BUG:  the function should fix all of its children when saved
 	
-	$return = "";
-	if ($data) {
-		$current_parentid = $data['parent_id'];
-		$current_id = $data['id'];
-	} else {
-		$current_parentid = 0;
-		$current_id = 0;
+	if ($_POST && !array_key_exists('uploadsubmit' ,$_POST)) {
+		$id = ($_GET['edit_id'] == 0 ? $globalid : $data['id']);
+		$level = 0;
+		$sql = "UPDATE {$GLOBALS['tableprefix']}_{$args['thetable']} SET parent_id = $_POST[parent_id] WHERE id = $id";
+		$success = mysql_query($sql);
+		$data = data(array('table' => $args["thetable"]), array('ID' => $id), 1);
+		
+		$level = get_hyr_level($data["id"], $args["thetable"], 0);
+		$sql = "UPDATE {$GLOBALS['tableprefix']}_{$args['thetable']} SET deep = $level WHERE id = $id";
+		$success = mysql_query($sql);
+		
+		$lineage = get_hyr_lineage($data["id"], $args["thetable"]);
+		$lineage = array_reverse($lineage);
+		$lineage = implode ( ", " , $lineage );
+		$sql = "UPDATE {$GLOBALS['tableprefix']}_{$args['thetable']} SET lineage = '$lineage' WHERE id = $id";
+		$success = mysql_query($sql);
+		
+		//all other items should update their liniage!!!
+		
+	// no data has been submited (just new one opened)
+	} elseif ($_GET['action'] == 'new') {
+		$data['id'] = 0;
+		$data['parent_id'] ['id'] = 0;
 	}
 	
+	$return = "";
 	$return .= "<label>$args[label]</label><div>";
 	$return .= "<select name='parent_id'>";
 	$return .= "<option value='0'>None</option>";
 	
-	$optiondatas = data(array('table' => $args['table']));
-	
-	foreach ($optiondatas as $optiondata) {
-		if ($current_id != $optiondata['id']) {		
-			$selected = ($current_parentid == $optiondata['id'] ?' SELECTED ':'');
-				
-			$return .= "<option $selected value='$optiondata[id]'>";
+	$optiondatas = data(array('table' => $args['thetable']));
+	$select = "";
+	foreach ($args["colvalues"] as $col) {
+		$select .= "h.".$col;
+	}
+	$sqltable = $GLOBALS['tableprefix']."_".$args['thetable'];
+	$sql = "SELECT 
+				$select, 
+				h.id, 
+				h.deep, 
+				h.lineage, 
+				h.parent_id, 
+				(
+					SELECT COUNT(*) 
+					FROM $sqltable 
+					where $sqltable.lineage LIKE (CONCAT(h.lineage,'%')) 
+					AND $sqltable.lineage != h.lineage
+				) as child
+			FROM 
+				{$GLOBALS['tableprefix']}_{$args['thetable']} as h
+			order by h.lineage";
+			
+	$result = mysql_query($sql) or trigger_error("SQL", E_USER_ERROR);
+    while ($item = mysql_fetch_array($result)) {
+		$current_children = explode(", ", $item["lineage"]);
+		if ($data["id"] == $item['id'] || in_array($data["id"], $current_children)) { $disabled = "disabled";} else {$disabled = "";}
+			
+			$selected = ($item['id'] == $data['parent_id'] ?' SELECTED ':'');
+			$return .= "<option $selected $disabled value='$item[id]'>";
 			$txt = "";
 			foreach ($args["colvalues"] as $col) {
 				$txt .= ($txt != "" ? $args["valueseperation"] : "");
-				$txt .= $optiondata[$col]; 
+				$txt .= $item[$col]; 
 			}
-			$return .= $txt . '</option>';
+			$return .= str_repeat("- ", $item["deep"]) . $txt . '</option>';
+		
+		
+	}
+
+	$return .= "</select></div>";
+	
+	return $return;
+}
+function get_hyr_level($theid, $thetable, $levelcount){
+	$sql = "SELECT parent_id, id FROM {$GLOBALS['tableprefix']}_{$thetable} WHERE id = $theid";
+	$result = mysql_query($sql);
+	$theresult = mysql_fetch_array($result);
+	$count = $levelcount;
+	if ($theresult["parent_id"] != 0) {
+		$count++;
+		
+		$count = get_hyr_level($theresult["parent_id"], $thetable, $count);
+	} elseif($levelcount == 20) { //failsave for infinite loops
+		return 20;
+	}
+	return $count;
+}
+
+function get_hyr_lineage($theid, $thetable, $ids = array()){
+	array_push($ids, $theid);
+
+	$sql = "SELECT parent_id, id FROM {$GLOBALS['tableprefix']}_{$thetable} WHERE id = $theid";
+	$result = mysql_query($sql);
+	$theresult = mysql_fetch_array($result);
+	if ($theresult["parent_id"] != 0) {
+		$ids = get_hyr_lineage($theresult["parent_id"], $thetable, $ids);
+	}
+	return $ids;
+}
+
+
+//select (m2s)
+/*
+	A simple singular connection to a table 
+
+	$args = array(
+		'thetable' => 'materialien',
+		'target_table' => 'farben',
+		'label' => 'Farben',
+		'target_col' => 'material_name',
+		'target_col_label' => 'Material'
+		);
+*/
+function mr_select($args, $data){
+	global $globalid;
+	$postname = $GLOBALS['tableprefix']."_".$args["target_table"]."_id";
+	// data has been submited
+	if ($_POST && !array_key_exists('uploadsubmit' ,$_POST)) {
+		$id = ($_GET['edit_id'] == 0 ? $globalid : $data['id']);
+		$sql = "UPDATE {$GLOBALS['tableprefix']}_{$args['thetable']} SET $postname = $_POST[$postname] WHERE id = $id";
+		$success = mysql_query($sql);
+		if ($success) {
+			echo "updated";
 		}
+		$data = data(array('table' => $args["thetable"]), array('ID' => $id), 1);
+	}
+	
+	//show
+	$return = "";
+	$return .= "<label for='$postname' >$args[label]</label>";
+	$return .= "<div><select name='$postname' id='$postname'>";
+	$selected_col = $GLOBALS['tableprefix'].'_'.$args['target_table'].'_id';
+	$selected_id = ($data ? $data[$selected_col] : '');
+	
+	$target_data = data(array('table' => $args['target_table']));
+	if (empty($target_data)) {return;}
+	foreach ($target_data as $t_d) {
+		$colvalue = $args['target_col'];
+		$selected = ($t_d['id'] == $selected_id ? ' SELECTED ' : '');
+		$return .= "<option $selected value='$t_d[id]'>$t_d[$colvalue]</option>";
 	}
 	$return .= "</select></div>";
 	
 	return $return;
 }
-
-
-function mr_saveparentselect($table, $newid){
-
-	$id = ($newid ? $newid : $_POST['id']);
+function save_select($thetable, $col, $updateid){
+	global $globalid;
 	
-	$sql ="UPDATE {$GLOBALS['tableprefix']}_{$table}
-	SET parent_id = '$_POST[parent_id]'
-	WHERE id = $id";
-	mysql_query($sql);
 	
-	// error_log( "<p class='log log_" . (mysql_affected_rows() != -1 ? 'success' : 'failed') . "'><date>[" . date('d-m-Y  G:i:s') . "]</date> {$GLOBALS['tableprefix']}_{$table} Parent_id with id $id changed to $_POST[parent_id]</p>", 3, "infos.log");
-}
-
-//images
-function mr_self_image($data = '', $table = '', $col = '', $name = '', $beforecol = '', $aftercol = '') {
-		
-	if ($data) {
-		if ($data[$col]) {
-			$value = ($data[$col] ? $data[$col] : '');
-			$return = "<img src='" . $data[$col] . "' alt='image' />";
-			$return .= "<br /><a href='?action=uploadimage&edit_id=".$data['id']."'>Neues Bild hochladen</a>";
-		} else {
-			$value = ($data[$col] ? $data[$col] : '');
-			$return = "<a href='?action=uploadimage&edit_id=".$data['id']."'>Bild hochladen</a>";
-		}
-	} else {
-		$return = "Sie können ein Bild hochladen sobale Sie die anderen Daten eingetragen haben.";
-	}
-	
-	return $return;
 }
 
 
-function mr_BuildListTable($data, $constr, $thetable){
-	$order = 'asc';
-	$orderby = '';
-	
-	if ( array_key_exists('order', $_GET)) {
-		$order = $_GET['order'];
-	}
-	if ( array_key_exists('orderby', $_GET)) {
-		$orderby = $_GET['orderby'];
-	}
-	
-	$headfoot = '<tr>';
-	$headfoot .= '<th>Actions</th>';
-	foreach ($constr as $key => $col) {
-		$it_orderby = 'asc';
-		if ($orderby == $col['name'] && $order == 'asc') {
-			$it_orderby = 'desc';
-		} 
-		$headfoot .= '<th id="' . $col['name'] . '" >' . $col['title'] . '</th>';
-	}
-	$headfoot .= '</tr>';
 
-	$content = mr_listrow($data, $constr, 0, $thetable);
-
-	echo '<form id="whatever" action method="get">';
-	echo '<table class="datatable" cellspacing="0">';
-		echo "<thead>";
-			echo $headfoot;
-		echo "</thead>";
-		echo "<tbody>";
-			echo $content;
-		echo "</tbody>";
-		echo "<tfoot>";
-			echo $headfoot;
-		echo "</tfoot>";
-	echo "</table>";
-	echo '</div>';
-	echo '</form>';
-}
-
-
-//multigroup (s2m)
+// ==============
+// = Multigroup ======================================================================================
+// ==============
 /*
 	this function will grab given coll elements from target table and displays them using mr_textfield, mr_textarea, mr_colorfield functions
 	Because this is used on s2m relations, data can be entered mutliple times!
@@ -607,42 +689,12 @@ function multigroup($args, $data){
 	return $return;
 }
 
-//select (m2s)
-/*
-	A simple singular connection to a table 
-
-	$args = array(
-		'thetable' => 'materialien',
-		'target_table' => 'farben',
-		'label' => 'Farben',
-		'target_col' => 'material_name',
-		'target_col_label' => 'Material'
-		);
-*/
-function mr_select($args, $data){
-
-	//save
-
-	//show
-	$return = "<label>$args[label]</label>";
-	$return = "<select name='$args[target_table]'>";
-	$selected_col = $GLOBALS['tableprefix'].'_'.$args['target_table'].'_id';
-	$selected_id = ($data ? $data[$selected_col] : '');
-	
-	$target_data = data(array('table' => $args['target_table']));
-	if (empty($target_data)) {return;}
-	foreach ($target_data as $t_d) {
-		$colvalue = $args['target_col'];
-		$selected = ($t_d['id'] == $selected_id ? ' SELECTED ' : '');
-		$return .= "<option $selected value='$t_d[id]'>$t_d[$colvalue]</option>";
-	}
-	$return .= "</select>";
-	
-	return $return;
-}
 
 
 
+// ============
+// = Media DB ======================================================================================
+// ============
 //image for imagedb (m2m)
 /*
 	$args = array(
@@ -712,14 +764,55 @@ function mr_image($args, $data){
 		
 	}
 
-				
-				
-				
 		
 	return $return;
 }
 
 
+
+
+// ===============
+// = Archiv List ======================================================================================
+// ===============
+function mr_BuildListTable($data, $constr, $thetable){
+	$order = 'asc';
+	$orderby = '';
+	
+	if ( array_key_exists('order', $_GET)) {
+		$order = $_GET['order'];
+	}
+	if ( array_key_exists('orderby', $_GET)) {
+		$orderby = $_GET['orderby'];
+	}
+	
+	$headfoot = '<tr>';
+	$headfoot .= '<th>Actions</th>';
+	foreach ($constr as $key => $col) {
+		$it_orderby = 'asc';
+		if ($orderby == $col['name'] && $order == 'asc') {
+			$it_orderby = 'desc';
+		} 
+		$headfoot .= '<th id="' . $col['name'] . '" >' . $col['title'] . '</th>';
+	}
+	$headfoot .= '</tr>';
+
+	$content = mr_listrow($data, $constr, 0, $thetable);
+
+	echo '<form id="whatever" action method="get">';
+	echo '<table class="datatable" cellspacing="0">';
+		echo "<thead>";
+			echo $headfoot;
+		echo "</thead>";
+		echo "<tbody>";
+			echo $content;
+		echo "</tbody>";
+		echo "<tfoot>";
+			echo $headfoot;
+		echo "</tfoot>";
+	echo "</table>";
+	echo '</div>';
+	echo '</form>';
+}
 
 //arvhivelist
 function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
@@ -780,6 +873,7 @@ function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 	}
 	return $return;
 }
+
 
 
 ?>

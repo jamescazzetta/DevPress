@@ -3,7 +3,7 @@ $thetable = 'kunden';
 $thename = 'Kunden';
 $thename_sing = 'Kunde';
 $filename = 'kunden.php';
-$joins = array('kunden_status', 'rechnungen', 'mediadb');
+$joins = array('kunden_status', 'rechnungen', 'mediadb', 'navigation');
 
 include('../../devpress/header.php'); 
 include('nav.php'); 
@@ -20,6 +20,9 @@ function editit($data){
 	echo "<section>";
 		echo mr_image(array('thetable' => $thetable, 'label' => 'Image Label', 'smalltext' => ''), $data);
 	echo "</section>";
+		echo "<section>";
+			echo mr_colorfield($data, $thetable, 'farbe', 'Farbe', '');
+			echo "</section>";
 		echo "<section>";
 			echo mr_textfield($data, $thetable, 'nachname', 'Nach Name', ' autofocus="autofocus" class="required" ');
 		echo "</section>";
@@ -63,6 +66,21 @@ function editit($data){
 		echo "<section>";
 			$args = array(
 				'thetable' => $thetable,
+				'target_table' => 'navigation',
+				'label' => 'Navigation',
+				"colvalues" => array("name"), //just for presentation
+				"valueseperation" => " " //just for presentation
+
+			);
+			if (mr_checkboxes($args, $data)) {
+				echo mr_checkboxes($args, $data);
+			} else {
+				echo "Erstellen Sie ein paar <strong>Stati</strong> damit Sie dieses Produkt zuteilen können.";
+			}
+		echo "</section>";
+		echo "<section>";
+			$args = array(
+				'thetable' => $thetable,
 				'label_sing' => 'Rechnung',
 				'label_plur' => 'Rechnungen',
 				'target_table' => 'rechnungen',
@@ -70,7 +88,8 @@ function editit($data){
 					'ref' => 'textfield',
 					'amount' => 'textfield',
 					'bank' => 'textfield',
-					'konto' => 'textfield'
+					'konto' => 'textfield',
+					'farbe'	=> 'colorfield'
 				),
 				'target_cols_labels' => array(
 					'ref' => 'Referenz Nummer',
