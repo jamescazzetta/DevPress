@@ -557,9 +557,6 @@ function mr_select($args, $data){
 		$id = ($_GET['edit_id'] == 0 ? $globalid : $data['id']);
 		$sql = "UPDATE {$GLOBALS['tableprefix']}_{$args['thetable']} SET $postname = $_POST[$postname] WHERE id = $id";
 		$success = mysql_query($sql);
-		if ($success) {
-			echo "updated";
-		}
 		$data = data(array('table' => $args["thetable"]), array('ID' => $id), 1);
 	}
 	

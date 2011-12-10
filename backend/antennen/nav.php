@@ -25,7 +25,7 @@
     <li <?php echo ($thetable == "navigation" ? 'class="current"': '' ); ?> >
       <a href="navigation.php">
         <span class="icon chart"></span>
-        <span class="badge">4</span>
+        <span class="badge"><?php echo count_table_rows($thetable); ?></span>
         Navigation
       </a>
     </li>

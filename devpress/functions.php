@@ -89,6 +89,9 @@ function has_children($table, $id){
 }
 
 
-
+function count_table_rows($thetable){
+	$result = mysql_query("SELECT * FROM {$GLOBALS["tableprefix"]}_{$thetable}");
+	return mysql_num_rows($result);
+}
 
 ?>

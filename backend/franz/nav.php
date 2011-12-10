@@ -4,6 +4,7 @@
     <li <?php echo ($thetable == "kunden" ? 'class="current"': '' ); ?> >
       <a href="<?php echo $backendurl ?>/kunden.php">
         <span class="icon dashboard"></span>
+        <span class="badge"><?php echo count_table_rows("kunden"); ?></span>
         Kunden
       </a>
     </li>
@@ -11,6 +12,7 @@
     <li <?php echo ($thetable == "kunden_status" ? 'class="current"': '' ); ?> >
       <a href="<?php echo $backendurl ?>/kunden_status.php">
         <span class="icon pencil"></span>
+        <span class="badge"><?php echo count_table_rows("kunden_status"); ?></span>
        	Stati
       </a>
     </li>  
@@ -18,6 +20,7 @@
     <li <?php echo ($thetable == "rechnungen" ? 'class="current"': '' ); ?> >
       <a href="<?php echo $backendurl ?>/rechnungen.php">
         <span class="icon pencil"></span>
+        <span class="badge"><?php echo count_table_rows("rechnungen"); ?></span>
        	Rechnungen
       </a>
     </li>
@@ -25,13 +28,14 @@
 	<li <?php echo ($thetable == "mediadb" ? 'class="current"': '' ); ?> >
       <a href="<?php echo $backendurl ?>/media.php">
         <span class="icon gallery"></span>
+        <span class="badge"><?php echo count_table_rows("mediadb"); ?></span>
        	Media
       </a>
     </li>
 	<li <?php echo ($thetable == "navigation" ? 'class="current"': '' ); ?> >
       <a href="navigation.php">
         <span class="icon chart"></span>
-        <span class="badge">4</span>
+        <span class="badge"><?php echo count_table_rows("navigation"); ?></span>
         Navigation
       </a>
     </li>
