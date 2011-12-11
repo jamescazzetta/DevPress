@@ -849,7 +849,15 @@ function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 					case 'filepreview':
 						$ext = pathinfo($dataitem[$col['name']], PATHINFO_EXTENSION);
 						if ($ext == 'png' || $ext == 'jpg') {
-							$return .= "<td><img src='" . $root . '/devpress/uploads/' . $dataitem[$col['name']] . "' alt='image' style='max-height:50px;max-width:50px;' /></td>";
+							
+							
+							
+							
+							$return .= "<td>";
+							$return .= "<a class='fancybox' href='" . $root . '/devpress/uploads/' . $dataitem[$col['name']] . "' target='blank' title='$dataitem[name]'>";
+							$return .= "<img src='" . $root . '/devpress/uploads/' . $dataitem[$col['name']] . "' alt='image' style='max-height:50px;max-width:50px;' />";
+							$return .= "</a>";
+							$return .= "</td>";
 						} else {
 							$return .= "<td>No preview possible.</td>";
 						}

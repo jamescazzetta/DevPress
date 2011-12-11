@@ -98,7 +98,7 @@ if (array_key_exists('edit_id',$_REQUEST)) {
 			unique_names : true,
 
 			// Resize images on clientside if we can
-			resize : {width : 320, height : 240, quality : 90},
+			resize : {width : 800, height : 800, quality : 90},
 
 			// Specify what files to browse for
 			filters : [
