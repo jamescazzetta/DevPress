@@ -30,7 +30,7 @@
 	width: 30px;
 	line-height: 30px;
 	text-indent: -9999px;
-	background-image: url('fancybox_buttons.png');
+	background-image: url('../img/fancybox_buttons.png');
 	background-repeat: no-repeat;
 }
 

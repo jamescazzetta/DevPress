@@ -15,7 +15,7 @@ function mr_image_preview($data){
 	if ($ext == 'png' || $ext == 'jpg') {
 		$return .= "<div class='image_preview'>";
 		$return .= "<a class='fancybox' href='" . $root . '/devpress/uploads/' . $data["tmpname"] . "' target='blank' title='$data[name]'>";
-		$return .= "<img src='" . $root . '/devpress/uploads/' . $data["tmpname"] . "' alt='image' style='max-height:50px;max-width:50px;' />";
+		$return .= "<img src='" . $root . '/devpress/uploads/' . $data["tmpname"] . "' alt='image' style='max-height:100px;max-width:100px;' />";
 		$return .= "</a>";
 		$return .= "</div>";
 	} else {
