@@ -46,3 +46,8 @@
 	<?php  } ?>
 <?php endif; ?>
 
+<?php
+global $ALERTS;
+echo $ALERTS;
+?>
+

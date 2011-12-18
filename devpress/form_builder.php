@@ -701,68 +701,68 @@ function multigroup($args, $data){
 		);
 */
 function mr_image($args, $data){
-	global $globalid;
-	global $root;
-	$return = '';
-
-	
-	$colname = "field_".$GLOBALS['tableprefix'] . "_mediadb_id_".$globalid;
-	if (array_key_exists($colname,$_POST)) {
-		if ($_POST[$colname] == '-') {
-			mysql_query("UPDATE $args[thetable] SET {$GLOBALS['tableprefix']}_mediadb_id = 0 WHERE id = $globalid LIMIT 1");			
-			$data[$GLOBALS['tableprefix'] . '_mediadb_id'] = '';
-			unset($data[$GLOBALS['tableprefix'] . '_mediadb']);
-
+	$colname = $GLOBALS['tableprefix'] . "_mediadb_id";
+	if (array_key_exists($colname,$data)) {
+		global $globalid;
+		global $root;
+		global $ALERTS;
+		$postname = "field_".$GLOBALS['tableprefix'] . "_mediadb_id_".$globalid;
+		$colobjname = $GLOBALS['tableprefix'] . "_mediadb";
+		$thetable = $GLOBALS['tableprefix'] . "_" . $args["thetable"];
+		$return = '';
+		$mediadbid = $data[$colname];
+		// update(self)
+		if (array_key_exists($postname,$_POST)) {
+			mysql_query("UPDATE $thetable SET $colname = $_POST[$postname] WHERE id = $globalid LIMIT 1");
+			$mediadbid = $_POST[$postname];			
 		}
-	}
-	//remove image
-	
-	
-	
-	// A new image was added by the uploader
-	if (array_key_exists('uploadsubmit', $_POST)){ 
-		$return .= "<label>$args[label]<small>This Image will not be added until the changes have been saved!</small></label><div>";
-		
-		$count = $_POST['uploader_count'];
-		for ($i=0; $i < $count; $i++) { 
-			$tmpname = $_POST['uploader_'.$i.'_tmpname'];
-			$name = $_POST['uploader_'.$i.'_name'];
-			$status = $_POST['uploader_'.$i.'_status'];
-			$newid = $_POST['uploader_'.$i.'_id'];
+		// update(uploader)
+		if (array_key_exists('uploadsubmit', $_POST)) {
+			$count = $_POST['uploader_count'];
+			for ($i=0; $i < $count; $i++) { 
+				$tmpname = $_POST['uploader_'.$i.'_tmpname'];
+				$name = $_POST['uploader_'.$i.'_name'];
+				$status = $_POST['uploader_'.$i.'_status'];
+				$newid = $_POST['uploader_'.$i.'_id'];
+			}
+			mysql_query("UPDATE $thetable SET $colname = $newid WHERE id = $globalid LIMIT 1");	
+			$ALERTS .= alert('The Image has been added', 'saved');
+			$mediadbid = $newid;		
 		}
-		$return .= "<img src='$root/devpress/uploads/".$tmpname. "' style='max-width:40px;max-height:40px;' />";
-		$return .= "<h3>" . $name . "</h3>";
-		//add new data to the data array
-		$data[$GLOBALS['tableprefix'] . '_mediadb_id'] = $newid;
-
-		
-		$return .= mr_textfield($data, $args['thetable'], $GLOBALS['tableprefix'] . '_mediadb_id', '', '', $type = 'hidden', '');
+		//delete
+		if (array_key_exists($postname."_delete",$_POST)) {
+			mysql_query("UPDATE $thetable SET $colname = 0 WHERE id = $globalid LIMIT 1");
+			$ALERTS .= alert('The Image has been disconnected from the Entree', 'saved');
+			$mediadbid = 0;
+		}
 	
+		//get data anew
+		$data[$colobjname] = data(array('table'=>'mediadb'),array('ID' => $mediadbid));
+		$data[$colname] = $mediadbid;
 	
-	} else {
-	//all normal
+		//image
+		if ($data[$colobjname]) {
+			$imagekeys = array_keys($data[$colobjname]);
+			$imagekey = $imagekeys[0];
+			$image = "<img src='$root/devpress/uploads/".$data[$colobjname][$imagekey]['tmpname']. "' style='max-width:40px;max-height:40px;' />";
+		} else {
+			$image = "";
+		}
+	
+		//form
 		$return .= "<label>$args[label]<small>$args[smalltext]</small></label><div>";
-		
-		if (array_key_exists($GLOBALS['tableprefix'] . '_mediadb', $data)) {
-			$imagedata = $data[$GLOBALS['tableprefix'] . '_mediadb'];
-		} else {
-			$imagedata = FALSE;
-		}
-		// 1. check if image is present and preview them 
-		if ($imagedata) {
-			$return .= "<img src='$root/devpress/uploads/".$imagedata['tmpname'] . "' style='max-width:40px;max-height:40px;' />";
-			$return .= "<h3>" . $imagedata['name'] . "</h3>";
-			$return .= mr_textfield($data, $args['thetable'], $GLOBALS['tableprefix'] . '_mediadb_id', '', '', $type = 'hidden', '');
-			$return .= "<input type='submit' value='-' name='field_".$GLOBALS['tableprefix'] . "_mediadb_id_".$globalid."'>Remove Image";
-		} else {
-			$return .= "<a class='fancybox fancybox.iframe' href='uploader.php?parent_uri=".$_SERVER['REQUEST_URI']."'>Add Image</a>";
-		}
+			if ($image) {
+				$return .= "<h3>" . $data[$colobjname][$imagekey]['name'] . "</h3>";
+				$return .= $image;
+				$return .= "<input type='submit' value='$data[$colname]' name='{$postname}_delete'>Remove Image";
+			} else {
+				$return .= "<a class='fancybox fancybox.iframe' href='minimediadb.php?parent_uri=".$_SERVER['REQUEST_URI']."'>Add Image</a>";
+			}
+			$return .= "<input type='hidden' name='$colname' value='$data[$colname]'>";
 		$return .= "</div>";
 		
+		return $return;
 	}
-
-		
-	return $return;
 }
 
 

@@ -12,6 +12,9 @@ function mr_createentry($table){
 		return mysql_insert_id();
 };
 
+function alert($message, $type){
+	return '<script type="text/javascript" charset="utf-8">new Notification(\''.$message.'\', \''.$type.'\');</script>';
+}
 // ===========
 // = GLOBALS =
 // ===========
@@ -30,7 +33,7 @@ if ($_POST && array_key_exists('edit_id', $_GET) && $_GET['edit_id'] != 0) {
 } else {
 	$globalid = 0;
 }
-
+$ALERTS = '';
 
 // ==============
 // = Essentials =
