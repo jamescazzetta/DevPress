@@ -16,10 +16,10 @@ function mr_createentry($table){
 // = GLOBALS =
 // ===========
 // existing data has been submited
-if ($_POST && $_GET['edit_id'] != 0) {
+if ($_POST && array_key_exists('edit_id', $_GET) && $_GET['edit_id'] != 0) {
 	$globalid = $_GET['edit_id'];
 // new data has been submited
-} elseif ($_POST && $_GET['edit_id'] == 0) {
+} elseif ($_POST && array_key_exists('edit_id', $_GET) && $_GET['edit_id'] == 0) {
 	$globalid = mr_createentry($thetable);
 // no data has been submited (just new one opened)
 } elseif (isset($_GET['action']) && $_GET['action'] == 'new') {
@@ -79,6 +79,21 @@ function endsWith($needle, $haystack)
 }
 
 
+function mr_image_preview($data){
+	global $root;
+	$return = "";
+	$ext = pathinfo($data["tmpname"], PATHINFO_EXTENSION);
+	if ($ext == 'png' || $ext == 'jpg') {
+		$return .= "<div class='image_preview'>";
+		$return .= "<a class='fancybox' href='" . $root . '/devpress/uploads/' . $data["tmpname"] . "' target='blank' title='$data[name]'>";
+		$return .= "<img src='" . $root . '/devpress/uploads/' . $data["tmpname"] . "' alt='image' style='max-height:100px;max-width:100px;' />";
+		$return .= "</a>";
+		$return .= "</div>";
+	} else {
+		$return .= "<div class='image_preview'>No preview possible.</div>";
+	}	
+	return $return;
+}
 
 
 // conditionals

@@ -69,7 +69,7 @@ if (array_key_exists('edit_id',$_REQUEST)) {
 			} else {
 			?>
 	
-	<form action="uploader.php?parent_uri=<?php echo $return_url ?>" method="post">
+	<form action="uploader.php?parent_uri=<?php echo $return_url ?>" method="post" id="uploaderform">
 		
 		<div id="uploader">
 			<p>You browser doesn't have Flash, Silverlight, Gears, BrowserPlus or HTML5 support.</p>
