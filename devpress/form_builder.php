@@ -692,7 +692,7 @@ function multigroup($args, $data){
 // ============
 // = Media DB ======================================================================================
 // ============
-//image for imagedb (m2m)
+//image for imagedb (m2m) SINGLE
 /*
 	$args = array(
 		'thetable' => 'materialien',
@@ -740,21 +740,14 @@ function mr_image($args, $data){
 		$data[$colobjname] = data(array('table'=>'mediadb'),array('ID' => $mediadbid));
 		$data[$colname] = $mediadbid;
 	
-		//image
-		if ($data[$colobjname]) {
-			$imagekeys = array_keys($data[$colobjname]);
-			$imagekey = $imagekeys[0];
-			$image = "<img src='$root/devpress/uploads/".$data[$colobjname][$imagekey]['tmpname']. "' style='max-width:40px;max-height:40px;' />";
-		} else {
-			$image = "";
-		}
-	
 		//form
 		$return .= "<label>$args[label]<small>$args[smalltext]</small></label><div>";
-			if ($image) {
+			if ($data[$colobjname]) {
+				$imagekeys = array_keys($data[$colobjname]);
+				$imagekey = $imagekeys[0];
 				$return .= "<h3>" . $data[$colobjname][$imagekey]['name'] . "</h3>";
-				$return .= $image;
-				$return .= "<input type='submit' value='$data[$colname]' name='{$postname}_delete'>Remove Image";
+				$return .= "<img src='$root/devpress/uploads/".$data[$colobjname][$imagekey]['tmpname']. "' style='max-width:40px;max-height:40px;' />";
+				$return .= "<input type='submit' value='-' name='{$postname}_delete'>Remove Image";
 			} else {
 				$return .= "<a class='fancybox fancybox.iframe' href='minimediadb.php?parent_uri=".$_SERVER['REQUEST_URI']."'>Add Image</a>";
 			}
@@ -762,6 +755,8 @@ function mr_image($args, $data){
 		$return .= "</div>";
 		
 		return $return;
+	} else {
+		return "<label>$args[label]<small>$args[smalltext]</small></label><div>Images can be Edited as soon as the rest has been saved.</div>";
 	}
 }
 
@@ -849,10 +844,6 @@ function mr_listrow($data, $constr, $parent_id = 0, $thetable, $level = 0){
 					case 'filepreview':
 						$ext = pathinfo($dataitem[$col['name']], PATHINFO_EXTENSION);
 						if ($ext == 'png' || $ext == 'jpg') {
-							
-							
-							
-							
 							$return .= "<td>";
 							$return .= "<a class='fancybox' href='" . $root . '/devpress/uploads/' . $dataitem[$col['name']] . "' target='blank' title='$dataitem[name]'>";
 							$return .= "<img src='" . $root . '/devpress/uploads/' . $dataitem[$col['name']] . "' alt='image' style='max-height:50px;max-width:50px;' />";
